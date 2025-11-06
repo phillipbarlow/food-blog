@@ -3,13 +3,14 @@ import "../styles/nav.css";
 import { useState } from "react";
 import profileIcon from "../images/profile-icon.png";
 import heroImage from "../images/hero.webp";
+import logo from "../images/logo.png"
 export default function Nav() {
   const [open, setOpen] = useState(false);
 
   return (
     // Global container
     <div>
-      <header className=" flex items-center justify-between bg-gray-300 h-[100px]">
+      <header className=" flex items-center justify-between bg-white h-[100px]">
         <nav className="relative flex justify-between items-center w-full h-full px-5 ">
           {/* hamburger button */}
           <button
@@ -27,7 +28,7 @@ export default function Nav() {
           {/* Dropdown navigation */}
           <div
             className={`fixed left-0 top-[100px] z-30 w-full h-screen
-              transform transition-all duration-300 ease-out lg:static lg:w-auto  lg:transform-none
+              transform transition-all duration-300 ease-out lg:order-1 lg:static lg:w-auto  lg:transform-none
               lg:opacity-100 lg:visible lg:pointer-events-auto  lg:items-center lg:h-full
               ${
                 open
@@ -36,7 +37,7 @@ export default function Nav() {
               }
               `}
           >
-            <ul className="bg-gray-200 flex flex-col w-full items-center p-8 space-y-5 m-0 list-none lg:flex-row lg:space-y-0 lg:space-x-6  lg:bg-transparent lg:h-full lg:p-0 lg:items-center">
+            <ul className="text-sm  bg-white flex flex-col w-full items-center p-8 space-y-5 m-0 list-none lg:flex-row lg:space-y-0 lg:space-x-6  lg:bg-transparent lg:h-full lg:p-0 lg:items-center lg:text-lg">
               <li className="flex space-x-5 lg:hidden">
                 <section>
                   <Link to="#">Log in</Link>
@@ -62,7 +63,7 @@ export default function Nav() {
               </li>
             </ul>
           </div>
-          <h1 className="text-2xl lg:order-1 m-0">CookBakeShare</h1>
+          <img src={logo} alt="cook bake and share logo lg:order-1" className="h-45"/>
           <div className="m-3 lg:order-3">
             <img src={profileIcon} alt="user profile icon" className="w-12" />
           </div>
