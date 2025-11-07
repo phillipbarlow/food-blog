@@ -3,7 +3,7 @@ import "../styles/nav.css";
 import { useState } from "react";
 import profileIcon from "../images/profile-icon.png";
 import heroImage from "../images/hero.webp";
-import logo from "../images/logo.png"
+import logo from "../images/logo.png";
 export default function Nav() {
   const [open, setOpen] = useState(false);
 
@@ -63,13 +63,17 @@ export default function Nav() {
               </li>
             </ul>
           </div>
-          <img src={logo} alt="cook bake and share logo lg:order-1" className="h-45"/>
+          <img
+            src={logo}
+            alt="cook bake and share logo lg:order-1"
+            className="h-45"
+          />
           <div className="m-3 lg:order-3">
             <img src={profileIcon} alt="user profile icon" className="w-12" />
           </div>
         </nav>
       </header>
-      <section className="relative min-h-[60svh] md:min-h-[70vh] lg:min-h-[80vh]">
+      <section className="relative h-[60vh] md:h-[70vh] lg:h-[80vh] max-h-[600px] overflow-hidden">
         <img
           src={heroImage}
           alt="Fresh green salad tossed in a bowl"
