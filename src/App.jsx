@@ -9,8 +9,8 @@ export default function App() {
     <div className="min-h-screen">
       <Header />
       <Routes>
-        {/* <Route path="/" element={<Home />} />
-        <Route path="/blog" element={<Blog />} /> */}
+        <Route path="/" element={<Home />} />
+        <Route path="/blog" element={<Blog />} />
       </Routes>
     </div>
   );

@@ -18,18 +18,16 @@
   transform-origin: center;
 }
 
-
 .hamburger-top {
-  top: 4px;  
+  top: 4px;
 }
 .hamburger-middle {
-  top: 10.5px;  
+  top: 10.5px;
 }
 .hamburger-bottom {
-  top: 18px;   
+  top: 18px;
 }
 
-/* OPEN STATE (rotate around center) */
 .open .hamburger-top {
   transform: translateY(7px) rotate(45deg);
 }
@@ -40,4 +38,35 @@
 
 .open .hamburger-bottom {
   transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Nav underline effect */
+
+.navItem {
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+  transition: transform 0.3s ease;
+}
+
+.navItem:hover {
+  transform: translateY(-3px);
+}
+
+.navItem::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 3px;
+  background-color: #a6a6a6;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s ease;
+}
+
+.navItem:hover::before {
+  transform: scaleY(1);
 }
