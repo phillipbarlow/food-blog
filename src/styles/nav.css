@@ -53,7 +53,7 @@
 .navItem:hover {
   transform: translateY(-3px);
 }
-
+/* Creates invisible border */
 .navItem::before {
   content: "";
   position: absolute;
@@ -61,12 +61,13 @@
   right: 0;
   bottom: -2px;
   height: 3px;
-  background-color: #a6a6a6;
-  transform: scaleY(0);
+  background-color: #000; 
+  transform: scaleY(0); /* Makes border invisible by default */
   transform-origin: bottom;
   transition: transform 0.3s ease;
+  border-radius: 10px;
 }
-
+/* Reveals invisible border */
 .navItem:hover::before {
   transform: scaleY(1);
 }

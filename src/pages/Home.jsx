@@ -11,7 +11,7 @@ export default function Home() {
           alt="Fresh green salad tossed in a bowl"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        {/* Optional dark overlay for readability */}
+        {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/10"></div>
         <div
           className="absolute inset-0 z-10 flex flex-col items-center justify-center
