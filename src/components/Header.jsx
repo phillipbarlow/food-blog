@@ -4,13 +4,13 @@ import { useState } from "react";
 import logo from "../images/logo.png";
 export default function Nav() {
   const [open, setOpen] = useState(false);
-  const [login, setLogin] = useState(false)
+  const [login, setLogin] = useState(false);
 
   return (
     // Global container
     <div>
       <header className=" flex items-center justify-between bg-white h-[100px]">
-        <nav className="relative flex justify-between items-center w-full h-full px-5 ">
+        <nav className="relative flex justify-between items-center w-full h-full px-5">
           {/* hamburger button */}
           <button
             id="menu-btn"
@@ -37,7 +37,7 @@ export default function Nav() {
               `}
           >
             <ul className=" font-['Inter'] text-[16px] lg:text-[17px] font-medium tracking-[0.01em] antialiased flex flex-col w-full items-center p-8 space-y-5 m-0 list-none bg-white lg:flex-row lg:space-y-0 lg:space-x-6 lg:bg-transparent lg:h-full lg:p-0 lg:items-center">
-              <li className=" flex space-x-5 lg:hidden">
+              <li className={`flex space-x-5 ${login ? "hidden" : "visible"}`}>
                 <section>
                   <Link className="navItem" to="#">
                     Log in
@@ -82,7 +82,9 @@ export default function Nav() {
             className="h-45"
           />
           <div className="m-3 lg:order-3">
-            <p className="cursor-pointer">{login ? 'Hey Phil':'Login'}</p>
+            <p className="cursor-pointer">
+              {login ? "Hey Phil" : "Login/signup"}
+            </p>
           </div>
         </nav>
       </header>
