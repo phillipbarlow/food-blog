@@ -10,7 +10,6 @@ export default function RecipeCard({
   servings,
   alt,
 }) {
-  // console.log(title)
   return (
     <div className="group overflow-hidden rounded-xl shadow-md bg-white transition hover:-translate-y-1 hover:shadow-lg">
       <div className="overflow-hidden">
