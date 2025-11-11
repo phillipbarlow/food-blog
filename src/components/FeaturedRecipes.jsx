@@ -1,5 +1,5 @@
-import {recipes} from "../data/recipes"
-
+import { recipes } from "../data/recipes";
+import RecipeCard from "./RecipeCard";
 export default function FeaturedRecipes() {
   return (
     <section className="py-12">
@@ -8,22 +8,17 @@ export default function FeaturedRecipes() {
           Featured recipes
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:grid-cols-3 ">
-          {recipes.map((img) => (
-            <div key={img.id} className="overflow-hidden rounded-xl shadow-md">
-              <img
-                src={img.src}
-                alt={img.alt}
-                className="
-              w-full 
-              h-[250px] 
-              sm:h-[280px] 
-              md:h-80 
-              lg:h-[350px] 
-              object-cover 
-              hover:scale-105 
-              transition-transform 
-              duration-300
-            "
+          {recipes.map((r) => (
+            <div key={r.id} className="overflow-hidden rounded-xl shadow-md">
+              <RecipeCard
+                key={r.id}
+                id={r.id}
+                title={r.title}
+                image={r.image}
+                description={r.description}
+                prepTime={r.prepTime}
+                servings={r.servings}
+                
               />
             </div>
           ))}
