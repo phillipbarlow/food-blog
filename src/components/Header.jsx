@@ -36,51 +36,53 @@ export default function Nav() {
               }
               `}
           >
-            <ul className=" font-['Inter'] text-[16px] lg:text-[17px] font-medium tracking-[0.01em] antialiased flex flex-col w-full items-center p-8 space-y-5 m-0 list-none bg-white lg:flex-row lg:space-y-0 lg:space-x-6 lg:bg-transparent lg:h-full lg:p-0 lg:items-center">
-              <li className={`flex space-x-5 ${login ? "hidden" : "visible"}`}>
+            {open&&<ul className=" font-['Inter'] text-[16px] lg:text-[17px] font-medium tracking-[0.01em] antialiased flex flex-col w-full items-center p-8 space-y-5 m-0 list-none bg-white lg:flex-row lg:space-y-0 lg:space-x-6 lg:bg-transparent lg:h-full lg:p-0 lg:items-center">
+              <li className={`flex space-x-5 lg:hidden ${login ? "hidden" : "visible"}`}>
                 <section>
-                  <Link className="navItem" to="#">
+                  <Link className="navItem" to="#" onClick={()=>setOpen(false)}>
                     Log in
                   </Link>
                 </section>
                 <section>
-                  <Link className="navItem " to="#">
+                  <Link className="navItem " to="#" onClick={()=>setOpen(false)}>
                     Create an account
                   </Link>
                 </section>
               </li>
               <li>
-                <Link className="navItem font-['Inter']" to="#">
+                <Link className="navItem font-['Inter']" to="/" onClick={()=>setOpen(false)}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link className="navItem" to="#">
+                <Link className="navItem" to="#" onClick={()=>setOpen(false)}>
                   Recipes
                 </Link>
               </li>
               <li>
-                <Link className="navItem" to="#">
+                <Link className="navItem" to="#" onClick={()=>setOpen(false)}>
                   Bakes
                 </Link>
               </li>
               <li>
-                <Link className="navItem" to="#">
+                <Link className="navItem" to="#" onClick={()=>setOpen(false)}>
                   Gallery
                 </Link>
               </li>
               <li>
-                <Link className="navItem" to="#">
+                <a className="navItem" href="mailto:phillipbarlow10@gmail.com">
                   Get in touch
-                </Link>
+                </a>
               </li>
-            </ul>
+            </ul>}
           </div>
+          <Link to={"/"}>
           <img
             src={logo}
             alt="cook bake and share logo lg:order-1"
             className="h-45"
           />
+          </Link>
           <div className="m-3 lg:order-3">
             <p className="cursor-pointer">
               {login ? "Hey Phil" : "Login/signup"}

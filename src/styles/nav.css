@@ -41,33 +41,34 @@
 }
 
 /* Nav underline effect */
+@media (min-width: 1024px) {
+  .navItem {
+    text-decoration: none;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+    transition: transform 0.3s ease;
+  }
 
-.navItem {
-  text-decoration: none;
-  position: relative;
-  display: inline-block;
-  padding-bottom: 2px;
-  transition: transform 0.3s ease;
-}
-
-.navItem:hover {
-  transform: translateY(-3px);
-}
-/* Creates invisible border */
-.navItem::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 3px;
-  background-color: #000; 
-  transform: scaleY(0); /* Makes border invisible by default */
-  transform-origin: bottom;
-  transition: transform 0.3s ease;
-  border-radius: 10px;
-}
-/* Reveals invisible border */
-.navItem:hover::before {
-  transform: scaleY(1);
+  .navItem:hover {
+    transform: translateY(-3px);
+  }
+  /* Creates invisible border */
+  .navItem::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 3px;
+    background-color: #000;
+    transform: scaleY(0); /* Makes border invisible by default */
+    transform-origin: bottom;
+    transition: transform 0.3s ease;
+    border-radius: 10px;
+  }
+  /* Reveals invisible border */
+  .navItem:hover::before {
+    transform: scaleY(1);
+  }
 }
