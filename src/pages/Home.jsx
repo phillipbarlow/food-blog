@@ -25,6 +25,7 @@ export default function Home() {
           </p>
         </div>
       </section>
+      {/* Hero end */}
       <FeaturedRecipes/>
       </main>
   );
