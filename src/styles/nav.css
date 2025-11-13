@@ -40,8 +40,9 @@
   transform: translateY(-7px) rotate(-45deg);
 }
 
-/* Nav underline effect */
 @media (min-width: 1024px) {
+
+  /* Nav-underline effect START*/
   .navItem {
     text-decoration: none;
     position: relative;
@@ -49,7 +50,6 @@
     padding-bottom: 2px;
     transition: transform 0.3s ease;
   }
-
   .navItem:hover {
     transform: translateY(-3px);
   }
@@ -71,4 +71,6 @@
   .navItem:hover::before {
     transform: scaleY(1);
   }
+  /* nav-underline effect END */
 }
+

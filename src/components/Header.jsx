@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "../styles/nav.css";
 import { useState } from "react";
-import logo from "../images/logo.png";
+import logo from "../images/cbs.jpeg";
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const [login, setLogin] = useState(false);
@@ -9,7 +9,7 @@ export default function Nav() {
   return (
     // Global container
     <div>
-      <header className=" flex items-center justify-between bg-white h-[100px]">
+      <header className="relative flex items-center justify-between bg-[#EBEAE6] h-[100px] ">
         <nav className="relative flex justify-between items-center w-full h-full px-5">
           {/* hamburger button */}
           <button
@@ -38,12 +38,12 @@ export default function Nav() {
           >
             <ul
               className={`font-['Inter'] text-[16px] lg:text-[17px] font-medium tracking-[0.01em] antialiased
-              flex flex-col w-full items-center p-8 space-y-5 m-0 list-none bg-white
+              flex flex-col w-full items-center p-8 space-y-5  list-none bg-[#EBEAE6]
               lg:flex-row lg:space-y-0 lg:space-x-6 lg:bg-transparent lg:h-full lg:p-0 lg:items-center
               ${open ? "block" : "hidden"} lg:flex`}
             >
               <li
-                className={`flex space-x-5 lg:hidden ${
+                className={`flex space-x-5 lg:hidden mt-12 ${
                   login ? "hidden" : "visible"
                 }`}
               >
@@ -96,13 +96,13 @@ export default function Nav() {
                 </a>
               </li>
             </ul>
-            
           </div>
-          <Link to={"/"}>
+          <Link to={"/"} className="absolute left-1/2 -translate-x-1/2 mt-8 z-50
+             lg:static lg:left-auto lg:translate-x-0">
             <img
               src={logo}
               alt="cook bake and share logo lg:order-1"
-              className="h-45"
+              className="h-55 w-55 p-5 rounded-full "
             />
           </Link>
           <div className="m-3 lg:order-3">
