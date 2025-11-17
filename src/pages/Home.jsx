@@ -1,7 +1,7 @@
 import heroImage from "../images/hero.webp";
 import FeaturedRecipes from "../components/FeaturedRecipes";
 import AboutSection from "../components/AboutSection";
-
+import Footer from "../components/Footer"
 export default function Home() {
   return (
     <main>
@@ -29,6 +29,7 @@ export default function Home() {
       {/* Hero end */}
       <FeaturedRecipes/>
       <AboutSection/>
+      <Footer/> 
       </main>
   );
 }
