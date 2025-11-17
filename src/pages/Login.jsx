@@ -15,6 +15,12 @@ export default function Input() {
           </div>
           <button type="submit" className="w-full bg-[#CC6330] text-white py-2 rounded-lg font-medium hover:bg-[#CC6330]/80 transition">Login</button>
         </form>
+        <p className="text-center text-sm text-gray-500 mt-4">
+          Don’t have an account?{" "}
+          <a href="/register" className="text-emerald-600 font-medium">
+            Sign up
+          </a>
+        </p>
       </div>
     </main>
   );
