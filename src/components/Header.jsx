@@ -99,8 +99,11 @@ export default function Nav() {
               className="h-55 w-55 p-5 rounded-full "
             />
           </Link>
-          <div className="m-3 lg:order-3  hover:bg-[#CC6330]/80 transition-transform duration-300">
-            <Link className="cursor-pointer bg-[#CC6330] px-6 py-3 text-white rounded-md shadow-2xl" to={loggedIn?'#':"/login"}>
+          <div className="m-3 lg:order-3  ">
+            <Link
+              className="cursor-pointer bg-[#CC6330] px-6 py-3 text-white rounded-md shadow-2xl hover:bg-[#CC6330]/80 transition"
+              to={loggedIn ? "#" : "/login"}
+            >
               {loggedIn ? "Hey Phil" : "Login"}
             </Link>
           </div>
