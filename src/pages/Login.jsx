@@ -1,7 +1,7 @@
 export default function Input() {
   return (
     // Global container
-    <main className="min-h-screen flex justify-center items-center">
+    <main className="h-[calc(100vh-100px)] flex justify-center items-center">
       <div className="bg-gray-50 p-4 max-w-md w-full rounded-2xl shadow-lg">
         <h2 className="text-3xl font-bold text-center mb-6">Log in</h2>
         <form className="space-y-5">
