@@ -4,7 +4,7 @@ import { useState } from "react";
 import logo from "../images/cbs.jpeg";
 export default function Nav() {
   const [open, setOpen] = useState(false);
-  const [login, setLogin] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   return (
     // Global container
@@ -44,7 +44,7 @@ export default function Nav() {
             >
               <li
                 className={`flex space-x-5 lg:hidden mt-12 ${
-                  login ? "hidden" : "visible"
+                  loggedIn ? "hidden" : "visible"
                 }`}
               >
                 <section>
@@ -54,15 +54,6 @@ export default function Nav() {
                     onClick={() => setOpen(false)}
                   >
                     Log in
-                  </Link>
-                </section>
-                <section>
-                  <Link
-                    className="navItem "
-                    to="#"
-                    onClick={() => setOpen(false)}
-                  >
-                    Create an account
                   </Link>
                 </section>
               </li>
@@ -97,18 +88,21 @@ export default function Nav() {
               </li>
             </ul>
           </div>
-          <Link to={"/"} className="absolute left-1/2 -translate-x-1/2 mt-8 z-50
-             lg:static lg:left-auto lg:translate-x-0">
+          <Link
+            to={"/"}
+            className="absolute left-1/2 -translate-x-1/2 mt-8 z-50
+             lg:static lg:left-auto lg:translate-x-0"
+          >
             <img
               src={logo}
               alt="cook bake and share logo lg:order-1"
               className="h-55 w-55 p-5 rounded-full "
             />
           </Link>
-          <div className="m-3 lg:order-3">
-            <p className="cursor-pointer">
-              {login ? "Hey Phil" : "Login/signup"}
-            </p>
+          <div className="m-3 lg:order-3  hover:bg-[#CC6330]/80 transition-transform duration-300">
+            <Link className="cursor-pointer bg-[#CC6330] px-6 py-3 text-white rounded-md shadow-2xl" to={loggedIn?'#':"/login"}>
+              {loggedIn ? "Hey Phil" : "Login"}
+            </Link>
           </div>
         </nav>
       </header>
