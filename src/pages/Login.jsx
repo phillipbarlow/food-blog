@@ -17,7 +17,7 @@ export default function Input() {
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
           Don’t have an account?{" "}
-          <a href="/register" className="text-emerald-600 font-medium">
+          <a href="/signup" className="text-emerald-600 font-medium">
             Sign up
           </a>
         </p>
