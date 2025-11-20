@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { recipes } from "../data/recipes";
-
+import CommentSection from "../components/CommentSection"
 export default function RecipeDetail() {
   const { id } = useParams();
   const recipe = recipes.find((r) => r.id === id);
@@ -17,6 +17,7 @@ export default function RecipeDetail() {
   }
   return (
     <main className="max-w-5xl mx-auto p-6 bg-gray-50 lg:rounded-xl pt-18 lg:mt-12">
+      {/* Main page */}
       <div className="grid md:grid-cols-2 gap-8 items-start">
         <img
           src={recipe.image}
@@ -49,6 +50,7 @@ export default function RecipeDetail() {
           </Link>
         </div>
       </div>
+      <CommentSection/>
     </main>
   );
 }
