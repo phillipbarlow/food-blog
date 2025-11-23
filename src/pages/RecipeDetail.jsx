@@ -1,10 +1,19 @@
 import { useParams, Link } from "react-router-dom";
 import { recipes } from "../data/recipes";
 import CommentSection from "../components/CommentSection"
+import { useEffect } from "react";
+import {useAuth} from '../context/useAuth.js'
 export default function RecipeDetail() {
   const { id } = useParams();
   const recipe = recipes.find((r) => r.id === id);
+  const {user,login} = useAuth()
+  useEffect(()=>{
+   login();
+  }, [])
 
+  useEffect(()=>{
+   console.log("User from AuthContext:", user);
+  }, [user])
   if (!recipe) {
     return (
       <main className="max-w-3xl mx-auto p-6">

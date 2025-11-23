@@ -1,6 +1,5 @@
 import profileAvatar from "../images/man.png";
 import userAvatar from "../images/user.png";
-import { useAuth } from "../context/useAuth";
 import { useState, useEffect } from "react";
 export default function RecipeDetail() {
   const [comment, setComment] = useState("");
@@ -44,9 +43,7 @@ export default function RecipeDetail() {
     setComments((prevComments) => [newComment, ...prevComments]);
     setComment("");
   };
-  useEffect(() => {
-    console.log(useAuth);
-  }, []);
+
   return (
     <div className="mt-12 w-full  max-w-3xl ">
       <h2 className="  text-3xl font-semibold tracking-tight text-slate-900 mb-4">
