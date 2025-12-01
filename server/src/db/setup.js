@@ -1,0 +1,37 @@
+// src/db/setup.js
+import { pool } from "./pool.js";
+
+async function setup() {
+  try {
+    console.log("Running DB setup...");
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS recipes (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        description TEXT,
+        image_url TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS comments (
+  id SERIAL PRIMARY KEY,
+  recipe_id INTEGER NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+  user_name TEXT NOT NULL,
+  comment TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+    `);
+
+    console.log("✅ Tables created / verified.");
+  } catch (error) {
+    console.error("❌ Setup failed:", error);
+  } finally {
+    await pool.end();
+    console.log("Pool closed.");
+  }
+}
+
+setup();
