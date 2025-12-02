@@ -29,34 +29,37 @@ export async function getSingleRecipe(req, res) {
     const result = await pool.query("SELECT * FROM recipes WHERE id = $1", [
       id,
     ]);
-    console.log(result.rows, "line 23");
+
     if (result.rows.length === 0) {
-      console.log("reached line 25");
-      return res.status(404).json({ error: "Recipe not found line 29" });
+      return res.status(404).json({ error: "Recipe not found" });
     }
 
     res.json(result.rows[0]);
   } catch (err) {
     console.log(err, "-- error from line 31");
-    res.status(500).json({ error: "Database error" });
+    res.status(500).json({ err: "Database error" });
   }
 }
 
 export async function postRecipe(req, res) {
-  const { title, description, image_url } = req.body;
+  const { title, description, image_url, category } = req.body;
   if (!title) {
     return res.status(400).json({ error: "Title is missing" });
   }
   if (!description) {
     return res.status(400).json({ error: "Description is missing" });
   }
+  if (!category) {
+    return res.status(400).json({ error: "category is missing" });
+  }
   try {
     const result = await pool.query(
-      `INSERT INTO recipes (title, description, image_url)
-       VALUES ($1, $2, $3)
+      `INSERT INTO recipes (title, description, image_url,category)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [title, description || null, image_url || null]
+      [title, description || null, image_url || null, category]
     );
+
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("❌ Error inserting recipe:", error);
@@ -99,4 +102,6 @@ export async function deleteRecipe(req, res) {
     console.log("Error deleting comment", err);
     res.status(500).json({ error: "Database error from comments" });
   }
+
+  
 }

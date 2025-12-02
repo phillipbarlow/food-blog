@@ -14,6 +14,10 @@ async function setup() {
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
+    await pool.query(`
+  ALTER TABLE recipes
+  ADD COLUMN IF NOT EXISTS category TEXT;
+`);
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS comments (
