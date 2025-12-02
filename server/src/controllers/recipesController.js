@@ -66,23 +66,6 @@ export async function postRecipe(req, res) {
     res.status(500).json({ error: "Database error line 50" });
   }
 }
-export async function getAllPostComments(req, res) {
-  const { id } = req.params;
-
-  try {
-    const result = await pool.query(
-      `SELECT * FROM comments WHERE recipe_id = $1 ORDER BY id DESC`,
-      [id]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "No comments found" });
-    }
-    res.json(result.rows);
-  } catch (err) {
-    console.log("Error getting comments", err);
-    res.status(500).json({ error: "Database Error from comments" });
-  }
-}
 
 export async function deleteRecipe(req, res) {
   const { id } = req.params;
@@ -102,6 +85,4 @@ export async function deleteRecipe(req, res) {
     console.log("Error deleting comment", err);
     res.status(500).json({ error: "Database error from comments" });
   }
-
-  
 }

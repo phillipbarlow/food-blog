@@ -2,10 +2,7 @@ import { pool } from "../db/pool.js";
 
 export async function postComment(req, res) {
   const { recipe_id, user_name, comment } = req.body;
-  console.log("✅ Reached POST /comments route, body:", req.body);
-  if (!recipe_id) {
-    return res.status(400).json({ error: "id is required" });
-  }
+
   if (!recipe_id || !user_name || !comment) {
     return res.status(400).json({
       error: "Missing fields",
@@ -21,6 +18,8 @@ export async function postComment(req, res) {
       [recipe_id, user_name, comment]
     );
 
+
+
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("❌ Error inserting comment:", error);
@@ -28,14 +27,38 @@ export async function postComment(req, res) {
   }
 }
 
-export async function deleteComment(req,res){
-  const {id} = req.params;
-  try{
+export async function deleteComment(req, res) {
+  const { id } = req.params;
+  try {
     const result = await pool.query(
-      `DELETE FROM comments WHERE id = $1 RETURNING *`,[id]
-    )
-    res.status(200).json({message: "Comment deleted successfully", deletedComment:result.rows[0]})
-  }catch(err){
-    console.log("Database error deleting comment", err)
+      `DELETE FROM comments WHERE id = $1 RETURNING *`,
+      [id]
+    );
+    res
+      .status(200)
+      .json({
+        message: "Comment deleted successfully",
+        deletedComment: result.rows[0],
+      });
+  } catch (err) {
+    console.log("Database error deleting comment", err);
+  }
+}
+
+export async function getAllComments(req, res) {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT * FROM comments WHERE recipe_id = $1 ORDER BY id DESC`,
+      [id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No comments found" });
+    }
+    res.json(result.rows);
+  } catch (err) {
+    console.log("Error getting comments", err);
+    res.status(500).json({ error: "Database Error from comments" });
   }
 }

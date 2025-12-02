@@ -5,7 +5,6 @@ import commentRouter from "./routes/comments.js";
 const app = express();
 
 app.use((req, res, next) => {
-  console.log("➡️  Incoming:", req.method, req.originalUrl);
   next();
 });
 // Allow your React app to access your API
@@ -15,7 +14,7 @@ app.use(
   })
 );
 
-// Allow your server to read JSON bodies
+
 app.use(express.json());
 
 app.get("/", (req, res) => {

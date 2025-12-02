@@ -29,3 +29,6 @@ image-3.png
 image-4.png
 image-card.png
 login.png
+.env
+*/.env
+**/.env

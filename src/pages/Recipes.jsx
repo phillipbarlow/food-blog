@@ -1,14 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 export default function Recipes() {
+  const [recipes, setRecipes] = useState([]);
+
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
         const res = await fetch("http://localhost:5001/recipes");
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        const data = res.json();
-        console.log("Recipes: ", data);
+        const data = await res.json();
+        setRecipes(data);
       } catch (error) {
         console.error("Fetch error:", error);
       }
@@ -16,5 +15,21 @@ export default function Recipes() {
     fetchRecipes();
   }, []);
 
-  return <div></div>;
+  return (
+    <main className="max-w-5xl mx-auto p-6 text-center mt-30">
+      <h1 className="text-3xl font-bold mb-6">Recipes</h1>
+      {recipes.length === 0 ? (
+        <p>No recipes yet.</p>
+      ) : (
+        <ul className="md:grid-cols-2 gap-6">
+          {recipes.map((r) => (
+            <li key={r.id} className="border rounded-lg p-4 bg-white shadow-sm">
+              <h2 className="text-xl font-semibold">{r.title}</h2>
+              <p className="text-sm text-gray-600">{r.description}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  );
 }

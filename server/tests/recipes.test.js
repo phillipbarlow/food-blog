@@ -109,6 +109,32 @@ describe("POST /recipes", () => {
   });
 });
 
+describe("POST recipes/:id/comments", () => {
+  test("Should return a posted comment", async () => {
+
+    const newComment = {
+      title: "Test Recipe",
+      description: "This is a test",
+      image_url: "https://test.com/test.jpg",
+      category: "cooking",
+    };
+    const res = await request(app)
+      .post("/recipes/:id/comments")
+      .send(newComment)
+      .set("Content-Type", "application/json");
+    // recipe_id, user_name, comment
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBeGreaterThan(0);
+
+    const recipe = res.body[0];
+
+    expect(recipe).toHaveProperty("id");
+    expect(recipe).toHaveProperty("recipe_id");
+    expect(recipe).toHaveProperty("user_name");
+    expect(recipe).toHaveProperty("comment");
+  });
+});
+
 describe("DELETE /recipes/:id", () => {
   test("Should delete recipe and return success", async () => {
     const newRecipe = {
@@ -129,10 +155,9 @@ describe("DELETE /recipes/:id", () => {
 
     expect(deleteRes.status).toBe(200);
 
-    const getRes = await request(app).get(`/recipes/${recipeId}`)
+    const getRes = await request(app).get(`/recipes/${recipeId}`);
 
-    expect(getRes.status).toBe(404)
-
+    expect(getRes.status).toBe(404);
   });
 });
 afterAll(async () => {
