@@ -98,7 +98,6 @@ describe("POST /recipes", () => {
       .post("/recipes")
       .send(newRecipe)
       .set("Content-Type", "application/json");
-    console.log(res.status, res.body, "--- POST /recipes response ---");
     const recipe = res.body;
     expect(res.status).toBe(201);
     expect(recipe).toHaveProperty("id");

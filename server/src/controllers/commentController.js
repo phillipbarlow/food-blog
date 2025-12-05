@@ -30,7 +30,7 @@ export async function deleteComment(req, res) {
   const { id } = req.params;
   try {
     const result = await pool.query(
-      `DELETE FROM comments WHERE id = $1 RETURNING *`,
+      `DELETE FROM comments WHERE recipe_id = $1 RETURNING *`,
       [id]
     );
     res.status(200).json({
