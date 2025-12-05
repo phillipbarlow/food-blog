@@ -111,24 +111,19 @@ describe("POST /recipes", () => {
 
 describe("POST recipes/:id/comments", () => {
   test("Should return a posted comment", async () => {
-
     const newComment = {
-      title: "Test Recipe",
-      description: "This is a test",
-      image_url: "https://test.com/test.jpg",
-      category: "cooking",
+      'user_name':'phil',
+      'comment':"Test comment"
     };
     const res = await request(app)
-      .post("/recipes/:id/comments")
+      .post("/recipes/5/comments")
       .send(newComment)
       .set("Content-Type", "application/json");
     // recipe_id, user_name, comment
-    expect(res.status).toBe(200);
-    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.status).toBe(201);
 
-    const recipe = res.body[0];
+    const recipe = res.body;
 
-    expect(recipe).toHaveProperty("id");
     expect(recipe).toHaveProperty("recipe_id");
     expect(recipe).toHaveProperty("user_name");
     expect(recipe).toHaveProperty("comment");

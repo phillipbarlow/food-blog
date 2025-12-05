@@ -1,12 +1,13 @@
 import { pool } from "../db/pool.js";
 
 export async function postComment(req, res) {
-  const { recipe_id, user_name, comment } = req.body;
+  const { user_name, comment } = req.body;
+  const recipe_id = req.params.id;
 
-  if (!recipe_id || !user_name || !comment) {
+  if (!user_name || !comment) {
     return res.status(400).json({
       error: "Missing fields",
-      details: { recipe_id, user_name, comment },
+      details: { user_name, comment },
     });
   }
 
@@ -17,8 +18,6 @@ export async function postComment(req, res) {
        RETURNING *`,
       [recipe_id, user_name, comment]
     );
-
-
 
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -34,12 +33,10 @@ export async function deleteComment(req, res) {
       `DELETE FROM comments WHERE id = $1 RETURNING *`,
       [id]
     );
-    res
-      .status(200)
-      .json({
-        message: "Comment deleted successfully",
-        deletedComment: result.rows[0],
-      });
+    res.status(200).json({
+      message: "Comment deleted successfully",
+      deletedComment: result.rows[0],
+    });
   } catch (err) {
     console.log("Database error deleting comment", err);
   }

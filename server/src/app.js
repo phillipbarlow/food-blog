@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import recipesRouter from "./routes/recipes.js";
-import commentRouter from "./routes/comments.js";
+import recipesRouter from "./routes/recipesRouter.js";
+import commentRouter from "./routes/commentsRouter.js";
 const app = express();
 
 app.use((req, res, next) => {
