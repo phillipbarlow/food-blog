@@ -118,7 +118,7 @@ describe("POST recipes/:id/comments", () => {
       .post("/recipes/5/comments")
       .send(newComment)
       .set("Content-Type", "application/json");
-    // recipe_id, user_name, comment
+  
     expect(res.status).toBe(201);
 
     const recipe = res.body;
