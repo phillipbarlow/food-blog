@@ -28,7 +28,7 @@ export async function postComment(req, res) {
 
 export async function deleteComment(req, res) {
   const { id } = req.params;
-
+console.log(id,'---from line 31')
   try {
     const result = await pool.query(
       `DELETE FROM comments WHERE recipe_id = $1 RETURNING *`,
@@ -68,7 +68,7 @@ export async function updateComment(req, res) {
   if (!comment) {
     return res.status(400).json({
       error: "Missing comment field",
-      details: comment
+      details: comment,
     });
   }
   try {
@@ -82,12 +82,10 @@ export async function updateComment(req, res) {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Comment not found" });
     }
-    res
-      .status(200)
-      .json({
-        "message": "Message been edited successfully",
-        "updatedComment": result.rows[0],
-      });
+    res.status(200).json({
+      message: "Message been edited successfully",
+      updatedComment: result.rows[0],
+    });
   } catch (err) {
     console.log("Error updating comment", err);
     res.status(500).json({ error: "Database Error from comments" });

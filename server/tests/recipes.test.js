@@ -2,6 +2,15 @@ import { describe, test, expect, afterAll } from "@jest/globals";
 import request from "supertest";
 import app from "../src/app.js";
 import { pool } from "../src/db/pool.js";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "testsecret";
+process.env.JWT_SECRET = JWT_SECRET;
+function makeToken() {
+  return jwt.sign({ id: 1 }, JWT_SECRET, { expiresIn: "1d" });
+}
+
+const token = makeToken();
 
 describe("GET /recipes", () => {
   test("Should return a list of recipes", async () => {
@@ -97,7 +106,9 @@ describe("POST /recipes", () => {
     const res = await request(app)
       .post("/recipes")
       .send(newRecipe)
-      .set("Content-Type", "application/json");
+      .set("Content-Type", "application/json")
+      .set("Authorization", `Bearer ${token}`);
+
     const recipe = res.body;
     expect(res.status).toBe(201);
     expect(recipe).toHaveProperty("id");
@@ -117,7 +128,8 @@ describe("POST recipes/:id/comments", () => {
     const res = await request(app)
       .post("/recipes/5/comments")
       .send(newComment)
-      .set("Content-Type", "application/json");
+      .set("Content-Type", "application/json")
+      .set("Authorization", `Bearer ${token}`);
   
     expect(res.status).toBe(201);
 
@@ -141,7 +153,8 @@ describe("DELETE /recipes/:id", () => {
     const createRes = await request(app)
       .post("/recipes")
       .send(newRecipe)
-      .set("Content-Type", "application/json");
+      .set("Content-Type", "application/json")
+      .set("Authorization", `Bearer ${token}`);
 
     const recipeId = createRes.body.id;
 

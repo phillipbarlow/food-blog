@@ -1,4 +1,5 @@
 import { Router } from "express";
+import authMiddleware from "../middleware/authMiddleware.js"
 import {
   getAllRecipes,
   getSingleRecipe,
@@ -13,7 +14,7 @@ router.get("/:id", getSingleRecipe);
 router.post("/", postRecipe);
 router.delete("/:id", deleteRecipe)
 
-router.post("/:id/comments",postComment)
+router.post("/:id/comments",authMiddleware,postComment)
 router.get("/:id/comments", getAllComments);
 
 export default router;
