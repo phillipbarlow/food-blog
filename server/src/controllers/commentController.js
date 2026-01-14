@@ -28,7 +28,6 @@ export async function postComment(req, res) {
 
 export async function deleteComment(req, res) {
   const { id } = req.params;
-console.log(id,'---from line 31')
   try {
     const result = await pool.query(
       `DELETE FROM comments WHERE recipe_id = $1 RETURNING *`,
