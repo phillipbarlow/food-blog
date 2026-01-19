@@ -1,7 +1,22 @@
-import { recipes } from "../data/recipes";
+import { useEffect, useState } from "react";
+// import { recipes } from "../data/recipes";
 import RecipeCard from "./RecipeCard";
+import { getRecipes } from "../api/api";
 export default function FeaturedRecipes() {
+  const [recipes, setRecipes] = useState([])
+  useEffect(() => {
+    const fetchRecipes = () => {
+      getRecipes()
+      .then((res)=>{
+        setRecipes(res)
+      })
+    };
+    fetchRecipes();
+  }, []);
+// store results into useState
+// replace line 24 map with contents of useState
   return (
+    
     <section className="py-12">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-center text-4xl font-bold mb-10">
@@ -18,7 +33,6 @@ export default function FeaturedRecipes() {
                 description={r.description}
                 prepTime={r.prepTime}
                 servings={r.servings}
-                
               />
             </div>
           ))}

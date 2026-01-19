@@ -36,7 +36,7 @@ export async function getSingleRecipe(req, res) {
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.log(err, "-- error from line 31");
+    console.log(err, "-- error from line 39");
     res.status(500).json({ err: "Database error" });
   }
 }
@@ -52,12 +52,13 @@ export async function postRecipe(req, res) {
   if (!category) {
     return res.status(400).json({ error: "category is missing" });
   }
+
   try {
     const result = await pool.query(
       `INSERT INTO recipes (title, description, image_url,category)
        VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [title, description || null, image_url || null, category]
+      [title, description, image_url || null, category]
     );
 
     res.status(201).json(result.rows[0]);

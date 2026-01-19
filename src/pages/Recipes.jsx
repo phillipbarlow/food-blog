@@ -6,15 +6,14 @@ export default function Recipes() {
     const fetchRecipes = async () => {
       try {
         const res = await fetch("http://localhost:5001/recipes");
-        const data = await res.json();
-        setRecipes(data);
+        setRecipes(res);
       } catch (error) {
         console.error("Fetch error:", error);
       }
     };
     fetchRecipes();
   }, []);
-
+  
   return (
     <main className="max-w-5xl mx-auto p-6 text-center mt-30">
       <h1 className="text-3xl font-bold mb-6">Recipes</h1>

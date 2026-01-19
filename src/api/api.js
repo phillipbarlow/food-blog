@@ -1,10 +1,9 @@
-const API_BASE = "/api";
+const API_BASE = "http://localhost:5001";
 
 async function request(endpoint, options = {}) {
   const res = await fetch(`${API_BASE}${endpoint}`, {
-    method: "POST",
+    method: "GET",
     headers: { "Content-Type": "application/json" },
-    ...(options.headers || {}),
     ...options
   });
 
@@ -33,3 +32,12 @@ export function login(email, password){
         body:JSON.stringify({email, password})
     })
 }
+
+export async function getRecipes(){
+  return request("/recipes")
+}
+
+export function getRecipe(id){
+  return request(`/recipes/${id}`)
+}
+//create rest of functions
