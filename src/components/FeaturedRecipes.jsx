@@ -13,8 +13,7 @@ export default function FeaturedRecipes() {
     };
     fetchRecipes();
   }, []);
-// store results into useState
-// replace line 24 map with contents of useState
+
   return (
     
     <section className="py-12">

@@ -56,7 +56,6 @@ export default function RecipeDetail() {
             className="w-full rounded-xl  object-cover"
           />
           <div>
-            dfdgfd
             {/* <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">
             {recipe.title}
           </h1>
@@ -85,7 +84,7 @@ export default function RecipeDetail() {
             </Link>
           </div>
         </div>
-        <CommentSection />
+        <CommentSection id={id}/>
       </main>
 
       // }

@@ -55,7 +55,7 @@ async function reset() {
     }
 
     for (let i = 1; i <= 50; i++) {
-      const image = "public/default-items-image.png";
+      const image = "/default-items-image.png";
       await pool.query(
         `INSERT INTO recipes (title, description, image, category)
          VALUES ($1, $2, $3, $4);`,
@@ -69,7 +69,6 @@ async function reset() {
     }
 
     // 🔽 updated comment seeding
-    const defaultAvatar = "/images/user.png";
 
     for (let i = 1; i <= 50; i++) {
       const recipeId = ((i - 1) % 10) + 1; // spread comments over first 10 recipes
@@ -78,7 +77,7 @@ async function reset() {
       const name = `User ${i}`;
       const time = new Date().toISOString().replace("T", " ").slice(0, 16);
       const comment = `Comment ${i} — this is a seeded comment for recipe ${recipeId}.`;
-      const avatar = defaultAvatar;
+      const avatar = "/user.png";
       const rating = ((i - 1) % 5) + 1; // 1–5
 
       await pool.query(
