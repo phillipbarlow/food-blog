@@ -23,17 +23,22 @@ async function reset() {
         id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
         description TEXT,
-        image_url TEXT,
+        image TEXT,
         category TEXT
       );
     `);
 
+    // 🔽 updated comments schema
     await pool.query(`
       CREATE TABLE comments (
         id SERIAL PRIMARY KEY,
         recipe_id INTEGER REFERENCES recipes(id),
         user_id INTEGER REFERENCES users(id),
-        comment TEXT NOT NULL
+        name TEXT NOT NULL,
+        time TEXT NOT NULL,
+        comment TEXT NOT NULL,
+        avatar TEXT NOT NULL,
+        rating INTEGER
       );
     `);
 
@@ -44,33 +49,42 @@ async function reset() {
         `INSERT INTO users (email, password_hash, display_name)
          VALUES ($1, $2, $3)
          RETURNING id;`,
-        [`user${i}@test.com`, "fake_hash", `User ${i}`]
+        [`user${i}@test.com`, "fake_hash", `User ${i}`],
       );
       userIds.push(result.rows[0].id);
     }
 
     for (let i = 1; i <= 50; i++) {
+      const image = "public/default-items-image.png";
       await pool.query(
-        `INSERT INTO recipes (title, description, image_url, category)
+        `INSERT INTO recipes (title, description, image, category)
          VALUES ($1, $2, $3, $4);`,
         [
           `Recipe ${i}`,
           `Description ${i}`,
-          `https://example.com/${i}.jpg`,
+          image,
           i % 2 === 0 ? "cooking" : "baking",
-        ]
+        ],
       );
     }
 
+    // 🔽 updated comment seeding
+    const defaultAvatar = "/images/user.png";
+
     for (let i = 1; i <= 50; i++) {
+      const recipeId = ((i - 1) % 10) + 1; // spread comments over first 10 recipes
+      const userId = userIds[(i - 1) % userIds.length];
+
+      const name = `User ${i}`;
+      const time = new Date().toISOString().replace("T", " ").slice(0, 16);
+      const comment = `Comment ${i} — this is a seeded comment for recipe ${recipeId}.`;
+      const avatar = defaultAvatar;
+      const rating = ((i - 1) % 5) + 1; // 1–5
+
       await pool.query(
-        `INSERT INTO comments (recipe_id, user_id, comment)
-         VALUES ($1, $2, $3);`,
-        [
-          i,
-          userIds[i - 1],
-          `Comment ${i}`,
-        ]
+        `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
+         VALUES ($1, $2, $3, $4, $5, $6, $7);`,
+        [recipeId, userId, name, time, comment, avatar, rating],
       );
     }
 
