@@ -40,4 +40,8 @@ export async function getRecipes(){
 export function getRecipe(id){
   return request(`/recipes/${id}`)
 }
+
+export function postComment(id){
+  return request(`/recipes/${id}/comments`)
+}
 //create rest of functions

@@ -83,7 +83,7 @@ async function reset() {
       await pool.query(
         `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
          VALUES ($1, $2, $3, $4, $5, $6, $7);`,
-        [recipeId, userId, name, time, comment, avatar, rating],
+        [recipeId, userId, name, time, comment, avatar, rating ],
       );
     }
 

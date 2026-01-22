@@ -1,8 +1,6 @@
 import profileAvatar from "../images/man.png";
-// import userAvatar from "../images/user.png";
 import { useState, useEffect } from "react";
 export default function RecipeDetail({id}) {
-  const [commentData, setCommentData] = useState("");
   const [comment, setComment] = useState("");
   const user = "Phil"
   const [comments, setComments] = useState([]);
@@ -12,7 +10,7 @@ export default function RecipeDetail({id}) {
     try {
       const res = await fetch(`http://localhost:5001/recipes/${id}/comments`);
       const data = await res.json();
-      console.log(data,' data from fetch')
+      console.log(data,'line 13 data from fetch!!!')
       setComments(data)
       // console.log(data[0].comment, " line 52 comment section");
     } catch (error) {
@@ -32,11 +30,11 @@ export default function RecipeDetail({id}) {
       avatar: "/user.png",
       rating: null,
     };
-    console.log(newComment,' -- line 59')
+    // console.log(newComment,' -- line 59')
     setComments((prevComments) => [newComment, ...prevComments]);
     setComment("");
   };
-  console.log(comments,' line 58 ---')
+  // console.log(comments,' line 58 ---')
   return (
     <div className="mt-12 w-full  max-w-3xl ">
       <h2 className="  text-3xl font-semibold tracking-tight text-slate-900 mb-4">
@@ -66,7 +64,7 @@ export default function RecipeDetail({id}) {
       <div className="mt-6 space-y-6">
         
         {comments.length > 0 && comments.map((c) => {
-        console.log(c, '-- line 94')
+          // console.log(c,'-- from inside of map')
           return (
             <div key={c.id} className="flex items-start gap-4">
               <img

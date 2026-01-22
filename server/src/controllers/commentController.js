@@ -1,24 +1,34 @@
 import { pool } from "../db/pool.js";
 
 export async function postComment(req, res) {
-  const { user_name, comment } = req.body;
-  const recipe_id = req.params.id;
+  const recipeId = req.params.id;
+  const { userId, name, comment, rating } = req.body;
 
-  if (!user_name || !comment) {
+  const time = new Date().toISOString().replace("T", " ").slice(0, 16);
+  const avatar = "/user.png";
+
+  if (!recipeId || !userId || !name || !comment) {
     return res.status(400).json({
-      error: "Missing fields",
-      details: { user_name, comment },
+      error: "Missing required fields",
+      details: { recipeId, userId, name, comment, rating },
     });
   }
 
   try {
     const result = await pool.query(
-      `INSERT INTO comments (recipe_id, user_name, comment)
-       VALUES ($1, $2, $3)
-       RETURNING *`,
-      [recipe_id, user_name, comment]
+      `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *;`,
+      [
+        recipeId,
+        userId,  
+        name,  
+        time,   
+        comment, 
+        avatar, 
+        rating ?? null,
+      ],
     );
-
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("❌ Error inserting comment:", error);
@@ -31,7 +41,7 @@ export async function deleteComment(req, res) {
   try {
     const result = await pool.query(
       `DELETE FROM comments WHERE recipe_id = $1 RETURNING *`,
-      [id]
+      [id],
     );
     res.status(200).json({
       message: "Comment deleted successfully",
@@ -49,7 +59,7 @@ export async function getAllComments(req, res) {
   try {
     const result = await pool.query(
       `SELECT * FROM comments WHERE recipe_id = $1 ORDER BY id DESC`,
-      [id]
+      [id],
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "No comments found" });
@@ -76,7 +86,7 @@ export async function updateComment(req, res) {
       SET comment = COALESCE($2, comment)
       WHERE id = $1
       RETURNING *`,
-      [id, comment]
+      [id, comment],
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Comment not found" });
