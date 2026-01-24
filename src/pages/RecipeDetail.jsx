@@ -29,7 +29,7 @@ export default function RecipeDetail() {
   }, [id]);
 
   if (isLoading) {
-    console.log(recipe, "line 28");
+    // console.log(recipe, "line 28");
     return (
       <main>
         <p>Loading!</p>

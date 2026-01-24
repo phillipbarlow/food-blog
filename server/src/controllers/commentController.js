@@ -19,15 +19,7 @@ export async function postComment(req, res) {
       `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *;`,
-      [
-        recipeId,
-        userId,  
-        name,  
-        time,   
-        comment, 
-        avatar, 
-        rating ?? null,
-      ],
+      [recipeId, userId, name, time, comment, avatar, rating ?? null],
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -61,10 +53,7 @@ export async function getAllComments(req, res) {
       `SELECT * FROM comments WHERE recipe_id = $1 ORDER BY id DESC`,
       [id],
     );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "No comments found" });
-    }
-    res.json(result.rows);
+    return res.json(result.rows);
   } catch (err) {
     console.log("Error getting comments", err);
     res.status(500).json({ error: "Database Error from comments" });

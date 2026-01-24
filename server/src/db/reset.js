@@ -22,9 +22,9 @@ async function reset() {
       CREATE TABLE recipes (
         id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
-        description TEXT,
+        description TEXT NOT NULL,
         image TEXT,
-        category TEXT
+        category TEXT NOT NULL
       );
     `);
 

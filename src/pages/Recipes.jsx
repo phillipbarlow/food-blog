@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import {getRecipes} from "../api/api.js"
 export default function Recipes() {
   const [recipes, setRecipes] = useState([]);
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const res = await fetch("http://localhost:5001/recipes");
-        setRecipes(res);
+        const allRecipes = getRecipes();
+        setRecipes(allRecipes);
       } catch (error) {
         console.error("Fetch error:", error);
       }

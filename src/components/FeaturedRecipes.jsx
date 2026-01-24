@@ -8,6 +8,7 @@ export default function FeaturedRecipes() {
     const fetchRecipes = () => {
       getRecipes()
       .then((res)=>{
+        // console.log(res[7].id, 'from line 11')
         setRecipes(res)
       })
     };
@@ -23,15 +24,15 @@ export default function FeaturedRecipes() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:grid-cols-3 ">
           {recipes.slice(0,10).map((r) => (
-            <div key={r.id} className="overflow-hidden rounded-xl shadow-md">
+            <div key={r.title} className="overflow-hidden rounded-xl shadow-md">
               <RecipeCard
                 key={r.id}
                 id={r.id}
                 title={r.title}
                 image={r.image}
                 description={r.description}
-                prepTime={r.prepTime}
-                servings={r.servings}
+                // prepTime={r.prepTime}
+                // servings={r.servings}
               />
             </div>
           ))}

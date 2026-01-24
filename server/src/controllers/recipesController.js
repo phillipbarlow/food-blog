@@ -35,14 +35,17 @@ export async function getSingleRecipe(req, res) {
     }
 
     res.json(result.rows[0]);
+    // console.log('from inside recipe controller', result.rows[0])
   } catch (err) {
-    console.log(err, "-- error from line 39");
-    res.status(500).json({ err: "Database error" });
+    // console.log(err, "-- error from line 39");
+    res.status(500).json({ err: `Database error ${err}`});
   }
 }
 
 export async function postRecipe(req, res) {
-  const { title, description, image_url, category } = req.body;
+  const { title, description, category } = req.body;
+  console.log(title,description,category)
+  const image = "/default-items-image.png";
   if (!title) {
     return res.status(400).json({ error: "Title is missing" });
   }
@@ -55,14 +58,16 @@ export async function postRecipe(req, res) {
 
   try {
     const result = await pool.query(
-      `INSERT INTO recipes (title, description, image_url,category)
+      `INSERT INTO recipes (title, description, image ,category)
        VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [title, description, image_url || null, category]
+      [title, description, image || null, category]
     );
-
+    // console.log(res, '-- result from result query')
+    // console.log(result.rows[0], '-- from line 66 recipe controlller')
     res.status(201).json(result.rows[0]);
   } catch (error) {
+    console.log(error, '-- line 67')
     console.error("❌ Error inserting recipe:", error);
     res.status(500).json({ error: "Database error line 50" });
   }
