@@ -10,6 +10,7 @@ export default function RecipeDetail({ id }) {
     const fetchRecipeComments = async () => {
       try {
         const data = await getRecipesComments(id)
+        console.log(data)
         setComments(data);
       } catch (error) {
         console.log("Error from fetching recipes own comments ", error);

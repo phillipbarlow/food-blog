@@ -1,12 +1,11 @@
 import { useParams, Link } from "react-router-dom";
-// import { recipes } from "../data/recipes";
 import CommentSection from "../components/CommentSection";
 import { useEffect, useState } from "react";
+import {deleteRecipe} from "../api/api.js"
 export default function RecipeDetail() {
   const [recipe, setRecipe] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const { id } = useParams();
-  // const recipeId = recipe.find((r) => r.id === id);
   useEffect(() => {
     setLoading(true);
     const fetchRecipe = async () => {
@@ -28,8 +27,18 @@ export default function RecipeDetail() {
     fetchRecipe();
   }, [id]);
 
+  const handleDelete = async () => {
+    try{
+      await deleteRecipe(id,{method: "DELETE"})
+      setRecipe(null);
+      
+    }catch(err){
+      console.log("Deleting error ", err)
+    }
+
+  }
+  
   if (isLoading) {
-    // console.log(recipe, "line 28");
     return (
       <main>
         <p>Loading!</p>
@@ -77,7 +86,7 @@ export default function RecipeDetail() {
               <li key={i}>{steps}</li>
             ))}
           </ol> */}
-            <button className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400">
+            <button onClick={handleDelete} className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400">
               Delete recipes
             </button>
             <Link

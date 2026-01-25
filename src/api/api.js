@@ -7,7 +7,7 @@ async function request(endpoint, options = {}) {
     ...options
   });
 
- const data = await res.json(); // 📌 only read here
+ const data = await res.json(); 
 
   if (!res.ok) {
     throw new Error(data.error || "Request failed"); 
@@ -50,5 +50,9 @@ export function postRecipe(id, options){
 
 export async function getRecipesComments(id){
   return request(`/recipes/${id}/comments`)
+}
+
+export function deleteRecipe(id, options){
+  return request(`/recipes/${id}`, options)
 }
 //create rest of functions

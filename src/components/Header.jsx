@@ -86,6 +86,11 @@ export default function Nav() {
                   Get in touch
                 </a>
               </li>
+              <li>
+                <a className="navItem" to="#" onClick={() => setOpen(false)}>
+                  Post recipe
+                </a>
+              </li>
             </ul>
           </div>
           <Link
