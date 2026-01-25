@@ -35,9 +35,7 @@ export async function getSingleRecipe(req, res) {
     }
 
     res.json(result.rows[0]);
-    // console.log('from inside recipe controller', result.rows[0])
   } catch (err) {
-    // console.log(err, "-- error from line 39");
     res.status(500).json({ err: `Database error ${err}`});
   }
 }
@@ -63,8 +61,7 @@ export async function postRecipe(req, res) {
        RETURNING *`,
       [title, description, image || null, category]
     );
-    // console.log(res, '-- result from result query')
-    // console.log(result.rows[0], '-- from line 66 recipe controlller')
+    console.log(result.rows[0])
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.log(error, '-- line 67')

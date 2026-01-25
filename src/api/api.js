@@ -44,8 +44,8 @@ export function postComment(id){
   return request(`/recipes/${id}/comments`)
 }
 
-export function postRecipe(id){
-  return request(`/recipes/${id}/comments`)
+export function postRecipe(id, options){
+  return request(`/recipes/${id}/comments`, options)
 }
 
 export async function getRecipesComments(id){

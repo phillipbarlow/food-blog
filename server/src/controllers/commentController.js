@@ -2,12 +2,20 @@ import { pool } from "../db/pool.js";
 
 export async function postComment(req, res) {
   const recipeId = req.params.id;
-  const { userId, name, comment, rating } = req.body;
+  const { userId = 1, name = "phil", comment, rating } = req.body;
 
   const time = new Date().toISOString().replace("T", " ").slice(0, 16);
   const avatar = "/user.png";
 
-  if (!recipeId || !userId || !name || !comment) {
+  // if (!recipeId || !userId || !name || !comment) {
+  //   return res.status(400).json({
+  //     error: "Missing required fields",
+  //     details: { recipeId, userId, name, comment, rating },
+  //   });
+  // }
+
+// default validation while auth is not set
+    if (!recipeId || !comment) {
     return res.status(400).json({
       error: "Missing required fields",
       details: { recipeId, userId, name, comment, rating },

@@ -24,7 +24,7 @@ export default function FeaturedRecipes() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:grid-cols-3 ">
           {recipes.slice(0,10).map((r) => (
-            <div key={r.title} className="overflow-hidden rounded-xl shadow-md">
+            <div key={r.id} className="overflow-hidden rounded-xl shadow-md">
               <RecipeCard
                 key={r.id}
                 id={r.id}

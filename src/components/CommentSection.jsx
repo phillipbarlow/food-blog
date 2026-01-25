@@ -1,15 +1,15 @@
 import profileAvatar from "../images/man.png";
-// import {getRecipesComments} from "../api/api.js"
 import { useState, useEffect } from "react";
+import { postRecipe, getRecipesComments } from "../api/api.js";
 export default function RecipeDetail({ id }) {
   const [comment, setComment] = useState("");
   const user = "Phil";
   const [comments, setComments] = useState([]);
+  const [isPosting, setIsPosting] = useState(false);
   useEffect(() => {
     const fetchRecipeComments = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/recipes/${id}/comments`);
-        const data = await res.json();
+        const data = await getRecipesComments(id)
         setComments(data);
       } catch (error) {
         console.log("Error from fetching recipes own comments ", error);
@@ -17,9 +17,10 @@ export default function RecipeDetail({ id }) {
     };
     fetchRecipeComments();
   }, [id]);
-  const handlePost = () => {
-    if (comment.trim() === "") return;
 
+  const handlePost = async () => {
+    if (comment.trim() === "") return;
+    setIsPosting(true);
     const newComment = {
       id: Date.now().toString(36),
       name: user,
@@ -29,8 +30,25 @@ export default function RecipeDetail({ id }) {
       rating: null,
     };
 
-    setComments((prevComments) => [newComment, ...prevComments]);
-    setComment("");
+    try {
+      await postRecipe(id, {
+        method: "POST",
+        body: JSON.stringify({
+          user_id: 1,
+          name: user,
+          comment: comment.trim(),
+          rating: 3,
+          avatar: "/user.png",
+        }),
+      });
+  
+      setComments((prevComments) => [newComment, ...prevComments]);
+      setComment("");
+    } catch (error) {
+      console.log("Error posting comment:", error);
+    } finally {
+      setIsPosting(false);
+    }
   };
 
   return (
@@ -54,7 +72,7 @@ export default function RecipeDetail({ id }) {
           onClick={() => handlePost()}
           className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition"
         >
-          Post
+          {isPosting ? "Posting" : "Post"}
         </button>
       </div>
       {/* Comment List */}
@@ -62,7 +80,6 @@ export default function RecipeDetail({ id }) {
       <div className="mt-6 space-y-6">
         {comments.length > 0 &&
           comments.map((c) => {
-            // console.log(c,'-- from inside of map')
             return (
               <div key={c.id} className="flex items-start gap-4">
                 <img
