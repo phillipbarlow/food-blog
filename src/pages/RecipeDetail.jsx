@@ -49,13 +49,14 @@ export default function RecipeDetail() {
     return (
       <main className="max-w-5xl mx-auto p-6 bg-gray-50 lg:rounded-xl pt-18 lg:mt-12">
         {/* Main page */}
-        <div className="grid md:grid-cols-2 gap-8 items-start">
+        <div className="grid md:grid-cols-2 sm:gap-0 xl:gap-8 items-start">
           <img
             src={recipe.image}
             alt={recipe.title}
             className="w-full rounded-xl  object-cover"
           />
-          <div>
+
+          <div >
             {/* <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">
             {recipe.title}
           </h1>
@@ -76,19 +77,21 @@ export default function RecipeDetail() {
               <li key={i}>{steps}</li>
             ))}
           </ol> */}
+            <button className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400">
+              Delete recipes
+            </button>
             <Link
-              className="inline-block mt-8 text-emerald-600 underline"
+              className="inline-block mt-0 text-emerald-600 underline"
               to="/"
             >
               ← Back to recipes
             </Link>
           </div>
         </div>
-        <CommentSection id={id}/>
+        <CommentSection id={id} />
       </main>
 
       // }
     );
   }
 }
-
