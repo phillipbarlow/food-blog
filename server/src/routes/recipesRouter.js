@@ -12,7 +12,7 @@ const router = Router();
 router.get("/", getAllRecipes);
 router.get("/:id", getSingleRecipe);
 router.post("/", postRecipe);
-router.delete("/:id", deleteRecipe)
+router.delete("/:id", deleteRecipe);
 
 // router.post("/:id/comments",authMiddleware,postComment)
 router.post("/:id/comments",postComment)

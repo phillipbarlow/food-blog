@@ -32,7 +32,7 @@ async function reset() {
     await pool.query(`
       CREATE TABLE comments (
         id SERIAL PRIMARY KEY,
-        recipe_id INTEGER REFERENCES recipes(id),
+        recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
         user_id INTEGER REFERENCES users(id),
         name TEXT NOT NULL,
         time TEXT NOT NULL,
