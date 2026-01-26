@@ -156,5 +156,32 @@
 .form-actions {
   margin-top: 0.5rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+}
+
+.clear-button {
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #b91c1c;
+  background: #fff;
+  border: 1px solid #fca5a5;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease,
+              transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.clear-button:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}
+
+.clear-button:active {
+  background: #fecaca;
+  border-color: #dc2626;
+  transform: translateY(0);
+  box-shadow: none;
 }
