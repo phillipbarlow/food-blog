@@ -5,6 +5,7 @@ export async function getAllRecipes(req, res) {
   try {
     let result;
     if (category) {
+      //  if (category === "baking" || category === "cooking") {
       result = await pool.query(
         "SELECT * FROM recipes WHERE category = $1 ORDER BY id DESC",
         [category],

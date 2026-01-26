@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import "../styles/nav.css";
 import { useState } from "react";
 import logo from "../images/cbs.jpeg";
+import PostRecipeForm from "../pages/PostRecipeForm";
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -87,9 +88,13 @@ export default function Nav() {
                 </a>
               </li>
               <li>
-                <a className="navItem" to="#" onClick={() => setOpen(false)}>
+                <Link
+                  className="navItem"
+                  to="/postRecipe"
+                  onClick={() => setOpen(false)}
+                >
                   Post recipe
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
