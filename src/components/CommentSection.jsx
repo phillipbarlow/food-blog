@@ -1,6 +1,6 @@
 import profileAvatar from "../images/man.png";
 import { useState, useEffect } from "react";
-import { postRecipe, getRecipesComments } from "../api/api.js";
+import { postRecipe, getRecipesComments,postComment } from "../api/api.js";
 export default function RecipeDetail({ id }) {
   const [comment, setComment] = useState("");
   const user = "Phil";
@@ -30,19 +30,10 @@ export default function RecipeDetail({ id }) {
       avatar: "/user.png",
       rating: null,
     };
-
+// console.log(newComment)
     try {
-      await postRecipe(id, {
-        method: "POST",
-        body: JSON.stringify({
-          user_id: 1,
-          name: user,
-          comment: comment.trim(),
-          rating: 3,
-          avatar: "/user.png",
-        }),
-      });
-  
+      const x = await postComment(id, newComment);
+      console.log('Created comment, ', x)
       setComments((prevComments) => [newComment, ...prevComments]);
       setComment("");
     } catch (error) {

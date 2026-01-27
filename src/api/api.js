@@ -40,12 +40,18 @@ export function getRecipe(id){
   return request(`/recipes/${id}`)
 }
 
-export function postComment(id){
-  return request(`/recipes/${id}/comments`)
+export function postComment(id,payload){
+  return request(`/recipes/${id}/comments`,{
+    method: "POST",
+    body: JSON.stringify(payload),
+  })
 }
 
-export function postRecipe(options){
-  return request(`/recipes`, options)
+export function postRecipe(payload){
+  return request("/recipes", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  })
 }
 
 export async function getRecipesComments(id){

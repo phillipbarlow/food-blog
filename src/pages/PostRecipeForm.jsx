@@ -20,7 +20,7 @@ export default function PostRecipeForm() {
   }
 
   function removeIngredient(index) {
-    setIngredients((curr) => curr.filter((_, i) => i !== index));
+    setIngredients((curr) =>  curr.filter((_, i) => i !== index));
   }
   function handleStepChange(value, index) {
     const updated = [...steps];
@@ -42,10 +42,7 @@ export default function PostRecipeForm() {
   }
   const handlePost = async (pay) => {
     try {
-      const response = await postRecipe({
-        method: "POST",
-        body: JSON.stringify(pay),
-      });
+      const response = await postRecipe(pay);
       console.log(response)
       navigate(`/recipes/${response.id}`);
     }catch (err) {
@@ -70,7 +67,7 @@ export default function PostRecipeForm() {
       category,
     };
     handlePost(payLoad);
-    console.log(payLoad);
+    // console.log(payLoad);
   }
 
   return (
