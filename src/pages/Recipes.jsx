@@ -7,6 +7,7 @@ export default function Recipes() {
     const fetchRecipes = async () => {
       try {
         const allRecipes = getRecipes();
+        // console.log(allRecipes)
         setRecipes(allRecipes);
       } catch (error) {
         console.error("Fetch error:", error);

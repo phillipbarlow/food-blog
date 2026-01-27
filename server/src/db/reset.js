@@ -17,53 +17,66 @@ async function reset() {
         display_name TEXT
       );
     `);
-
     await pool.query(`
       CREATE TABLE recipes (
         id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
-        description TEXT NOT NULL,
-        image TEXT,
-        category TEXT NOT NULL
-      );
-    `);
+        ingredients TEXT NOT NULL,
+        instructions TEXT NOT NULL,
+        category TEXT NOT NULL,
+        image TEXT
+        );
+        `);
 
     // 🔽 updated comments schema
     await pool.query(`
-      CREATE TABLE comments (
-        id SERIAL PRIMARY KEY,
-        recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
-        user_id INTEGER REFERENCES users(id),
-        name TEXT NOT NULL,
-        time TEXT NOT NULL,
-        comment TEXT NOT NULL,
-        avatar TEXT NOT NULL,
-        rating INTEGER
-      );
-    `);
+          CREATE TABLE comments (
+            id SERIAL PRIMARY KEY,
+            recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
+            user_id INTEGER REFERENCES users(id),
+            name TEXT NOT NULL,
+            time TEXT NOT NULL,
+            comment TEXT NOT NULL,
+            avatar TEXT NOT NULL,
+            rating INTEGER
+            );
+            `);
 
     const userIds = [];
 
     for (let i = 1; i <= 50; i++) {
       const result = await pool.query(
         `INSERT INTO users (email, password_hash, display_name)
-         VALUES ($1, $2, $3)
-         RETURNING id;`,
+                VALUES ($1, $2, $3)
+                RETURNING id;`,
         [`user${i}@test.com`, "fake_hash", `User ${i}`],
       );
       userIds.push(result.rows[0].id);
     }
 
     for (let i = 1; i <= 50; i++) {
+      const ingredientsArr = [
+        `ingredient${i}`,
+        `ingredient${i + 1}`,
+        `ingredient${i + 2}`,
+      ];
+      const instructionsArr = [
+        `instruction${i}`,
+        `instruction${i + 1}`,
+        `instruction${i + 2}`,
+      ];
+      const ingredientsString = JSON.stringify(ingredientsArr);
+      const instructionsString = JSON.stringify(instructionsArr);
       const image = "/default-items-image.png";
       await pool.query(
-        `INSERT INTO recipes (title, description, image, category)
-         VALUES ($1, $2, $3, $4);`,
+        `INSERT INTO recipes (title, ingredients, instructions, category, image)
+         VALUES ($1, $2, $3, $4, $5);`,
         [
-          `Recipe ${i}`,
-          `Description ${i}`,
-          image,
+          `title ${i}`,
+          ingredientsString,
+          instructionsString,
           i % 2 === 0 ? "cooking" : "baking",
+          image,
         ],
       );
     }
@@ -83,7 +96,7 @@ async function reset() {
       await pool.query(
         `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
          VALUES ($1, $2, $3, $4, $5, $6, $7);`,
-        [recipeId, userId, name, time, comment, avatar, rating ],
+        [recipeId, userId, name, time, comment, avatar, rating],
       );
     }
 

@@ -1,16 +1,19 @@
 import { useState } from "react";
 import "../styles/recipeForm.css";
+import { postRecipe } from "../api/api.js";
+
 export default function PostRecipeForm() {
   const [ingredients, setIngredients] = useState([""]);
   const [steps, setSteps] = useState([""]);
   const [category, setCategory] = useState("cooking");
+  const [title, setTitle] = useState("");
 
   function handleIngredientChange(value, index) {
     const updated = [...ingredients];
     updated[index] = value;
     setIngredients(updated);
   }
-
+  // console.log(id)
   function addIngredient() {
     setIngredients((curr) => [...curr, ""]);
   }
@@ -31,25 +34,39 @@ export default function PostRecipeForm() {
   function removeStep(index) {
     setSteps((curr) => curr.filter((_, i) => i !== index));
   }
-  function clearAll(){
+  function clearAll() {
+    setTitle("");
     setSteps([""]);
-    setIngredients([""])
+    setIngredients([""]);
   }
+  const handlePost = async (pay) => {
+    try {
+      await postRecipe({
+        method: "POST",
+        body: JSON.stringify(pay),
+      });
+    }catch (err) {
+      console.log("Error from handlePost", err);
+    }
+  };
 
   function handleSubmit(e) {
     e.preventDefault();
+    const trimmerTitle = title.trim();
     const trimmedIngredients = ingredients
       .map((i) => i.trim())
       .filter((item) => item !== "");
-    const trimmedSteps = steps
+    const trimmedInstructions = steps
       .map((i) => i.trim())
       .filter((item) => item !== "");
 
     const payLoad = {
+      title: trimmerTitle,
       ingredients: trimmedIngredients,
-      steps: trimmedSteps,
+      instructions: trimmedInstructions,
       category,
     };
+    handlePost(payLoad);
     console.log(payLoad);
   }
 
@@ -57,7 +74,18 @@ export default function PostRecipeForm() {
     <main className="recipe-form-page">
       <form className="recipe-form mt-12" onSubmit={handleSubmit}>
         <h1 className="form-title">Add New Recipe</h1>
-
+        <section className="form-section">
+          <label htmlFor="title">Title</label>
+          <input
+            id="title"
+            value={title}
+            type="text"
+            className="text-input"
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
+          />
+        </section>
         {/* Ingredients */}
         <section className="form-section">
           <label htmlFor="ingredient-0" className="field-label">
@@ -65,7 +93,7 @@ export default function PostRecipeForm() {
           </label>
 
           <div className="dynamic-list">
-            {ingredients.map((item, index,arr) => (
+            {ingredients.map((item, index, arr) => (
               <div className="dynamic-list-row" key={index}>
                 <input
                   id={`ingredient-${index}`}
@@ -77,7 +105,7 @@ export default function PostRecipeForm() {
                     handleIngredientChange(e.target.value, index)
                   }
                   onKeyDown={(e) => {
-                    const last = arr.at(-1)
+                    const last = arr.at(-1);
                     if (e.key === "Enter") {
                       e.preventDefault();
                       if (last.trim() !== "") {
@@ -132,7 +160,7 @@ export default function PostRecipeForm() {
                   value={item}
                   onChange={(e) => handleStepChange(e.target.value, index)}
                   onKeyDown={(e) => {
-                    const last = arr.at(-1)
+                    const last = arr.at(-1);
                     if (e.key === "Enter") {
                       e.preventDefault();
                       if (last.trim() !== "") {

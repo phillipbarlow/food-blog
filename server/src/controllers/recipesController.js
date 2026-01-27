@@ -42,27 +42,32 @@ export async function getSingleRecipe(req, res) {
 }
 
 export async function postRecipe(req, res) {
-  const { title, description, category } = req.body;
-  console.log(title, description, category);
+  const { title, ingredients, instructions, category } = req.body;
+  const ingredientsString = JSON.stringify(ingredients);
+  const instructionsString = JSON.stringify(instructions);
+  console.log(title, ingredients, instructions, category);
   const image = "/default-items-image.png";
   if (!title) {
     return res.status(400).json({ error: "Title is missing" });
   }
-  if (!description) {
-    return res.status(400).json({ error: "Description is missing" });
+  if (!ingredients) {
+    return res.status(400).json({ error: "Ingredients are missing" });
+  }
+  if (!instructions) {
+    return res.status(400).json({ error: "Instructions are missing" });
   }
   if (!category) {
-    return res.status(400).json({ error: "category is missing" });
+    return res.status(400).json({ error: "Category is missing" });
   }
 
   try {
     const result = await pool.query(
-      `INSERT INTO recipes (title, description, image ,category)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO recipes (title,ingredients ,instructions ,category, image)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [title, description, image || null, category],
+      [title, ingredientsString, instructionsString, category, image || null],
     );
-    console.log(result.rows[0]);
+    // console.log(result.rows[0]);
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.log(error, "-- line 67");
@@ -74,7 +79,6 @@ export async function postRecipe(req, res) {
 export async function deleteRecipe(req, res) {
   const { id } = req.params;
   try {
-
     const result = await pool.query(
       `DELETE FROM recipes WHERE id = $1 RETURNING *`,
       [id],
