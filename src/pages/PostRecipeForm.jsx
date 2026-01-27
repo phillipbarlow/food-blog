@@ -1,12 +1,13 @@
 import { useState } from "react";
 import "../styles/recipeForm.css";
 import { postRecipe } from "../api/api.js";
-
+import { useNavigate } from "react-router-dom";
 export default function PostRecipeForm() {
   const [ingredients, setIngredients] = useState([""]);
   const [steps, setSteps] = useState([""]);
   const [category, setCategory] = useState("cooking");
   const [title, setTitle] = useState("");
+  const navigate = useNavigate();
 
   function handleIngredientChange(value, index) {
     const updated = [...ingredients];
@@ -41,10 +42,12 @@ export default function PostRecipeForm() {
   }
   const handlePost = async (pay) => {
     try {
-      await postRecipe({
+      const response = await postRecipe({
         method: "POST",
         body: JSON.stringify(pay),
       });
+      console.log(response)
+      navigate(`/recipes/${response.id}`);
     }catch (err) {
       console.log("Error from handlePost", err);
     }

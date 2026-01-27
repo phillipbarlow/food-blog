@@ -67,7 +67,8 @@ export async function postRecipe(req, res) {
        RETURNING *`,
       [title, ingredientsString, instructionsString, category, image || null],
     );
-    // console.log(result.rows[0]);
+    console.log("Back-end result row:", result.rows[0]);
+
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.log(error, "-- line 67");
