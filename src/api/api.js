@@ -58,7 +58,7 @@ export async function getRecipesComments(id){
   return request(`/recipes/${id}/comments`)
 }
 
-export function deleteRecipe(id, options){
-  return request(`/recipes/${id}`, options)
+export function deleteRecipe(id){
+  return request(`/recipes/${id}`, { method: "DELETE" })
 }
 //create rest of functions

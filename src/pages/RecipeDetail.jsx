@@ -31,7 +31,7 @@ export default function RecipeDetail() {
 
   const handleDelete = async () => {
     try {
-      await deleteRecipe(id, { method: "DELETE" });
+      await deleteRecipe(id);
       setRecipe(null);
     } catch (err) {
       console.log("Deleting error ", err);
