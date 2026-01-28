@@ -14,8 +14,8 @@ export async function postComment(req, res) {
   //   });
   // }
 
-// default validation while auth is not set
-    if (!recipeId || !comment) {
+  // default validation while auth is not set
+  if (!recipeId || !comment) {
     return res.status(400).json({
       error: "Missing required fields",
       details: { recipeId, userId, name, comment, rating },
@@ -38,12 +38,12 @@ export async function postComment(req, res) {
 
 export async function deleteComment(req, res) {
   const { id } = req.params;
-   const commentId = Number(id);
+  const commentId = Number(id);
 
   // ✅ sanity check: must be a real integer
-  if (!Number.isInteger(commentId)) {
-    return res.status(400).json({ error: "Invalid comment id" });
-  }
+  // if (!Number.isInteger(commentId)) {
+  //   return res.status(400).json({ error: "Invalid comment id" });
+  // }
   try {
     const result = await pool.query(
       `DELETE FROM comments WHERE comments.id = $1 RETURNING *`,
@@ -77,8 +77,9 @@ export async function getAllComments(req, res) {
 }
 
 export async function updateComment(req, res) {
-  const { id } = req.params;
-  const { comment } = req.body;
+  const { id, commentId } = req.params;
+  const { comment, rating} = req.body;
+// console.log(id,commentId)
   if (!comment) {
     return res.status(400).json({
       error: "Missing comment field",
@@ -87,21 +88,25 @@ export async function updateComment(req, res) {
   }
   try {
     const result = await pool.query(
-      `UPDATE comments 
-      SET comment = COALESCE($2, comment)
-      WHERE id = $1
-      RETURNING *`,
-      [id, comment],
+      `UPDATE comments
+      SET comment = COALESCE($1, comment),
+      rating = COALESCE($2, rating)
+      WHERE comments.id = $3 AND recipe_id = $4
+      RETURNING *;`,
+      [comment, rating || null, commentId, id],
     );
+
     if (result.rows.length === 0) {
+      console.log(req.params, "line 101");
       return res.status(404).json({ error: "Comment not found" });
     }
+
     res.status(200).json({
       message: "Message been edited successfully",
       updatedComment: result.rows[0],
     });
   } catch (err) {
     console.log("Error updating comment", err);
-    res.status(500).json({ error: "Database Error from comments" });
+    res.status(500).json({ error: "Database Error from comments patch" });
   }
 }
