@@ -1,6 +1,7 @@
 import profileAvatar from "../images/man.png";
 import { useState, useEffect } from "react";
-import { postRecipe, getRecipesComments,postComment } from "../api/api.js";
+import { getRecipesComments, postComment, deleteComment } from "../api/api.js";
+
 export default function RecipeDetail({ id }) {
   const [comment, setComment] = useState("");
   const user = "Phil";
@@ -9,8 +10,7 @@ export default function RecipeDetail({ id }) {
   useEffect(() => {
     const fetchRecipeComments = async () => {
       try {
-        const data = await getRecipesComments(id)
-        console.log(data)
+        const data = await getRecipesComments(id);
         setComments(data);
       } catch (error) {
         console.log("Error from fetching recipes own comments ", error);
@@ -23,18 +23,15 @@ export default function RecipeDetail({ id }) {
     if (comment.trim() === "") return;
     setIsPosting(true);
     const newComment = {
-      id: Date.now().toString(36),
       name: user,
       time: new Date().toISOString().replace("T", " ").slice(0, 16),
       comment,
       avatar: "/user.png",
       rating: null,
     };
-// console.log(newComment)
     try {
-      const x = await postComment(id, newComment);
-      console.log('Created comment, ', x)
-      setComments((prevComments) => [newComment, ...prevComments]);
+     const created = await postComment(id, newComment);
+      setComments((prevComments) => [created, ...prevComments]);
       setComment("");
     } catch (error) {
       console.log("Error posting comment:", error);
@@ -43,6 +40,14 @@ export default function RecipeDetail({ id }) {
     }
   };
 
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await deleteComment(commentId);
+      setComments((curr) => curr.filter((comment) => comment.id !== commentId));
+    } catch (err) {
+      console.log("Error from handle delete ", err);
+    }
+  };
   return (
     <div className="mt-12 w-full  max-w-3xl ">
       <h2 className="  text-3xl font-semibold tracking-tight text-slate-900 mb-4">
@@ -54,11 +59,16 @@ export default function RecipeDetail({ id }) {
         <textarea
           className="flex-1 resize-none border border-slate-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
           value={comment}
-          name=""
-          id=""
           onChange={(e) => setComment(e.target.value)}
           placeholder="Add a comment..."
           rows="2"
+          onKeyDown={(e) => {
+            // console.log(e.key)
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handlePost()
+            }
+          }}
         />
         <button
           onClick={() => handlePost()}
@@ -83,6 +93,14 @@ export default function RecipeDetail({ id }) {
                   <div className="flex items-center gap-3">
                     <p className="font-semibold text-slate-900">{c.name}</p>
                     <span className="text-sm text-slate-500">{c.time}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteComment(c.id)}
+                      className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
+                      aria-label={`Delete comment from ${c.name}`}
+                    >
+                      Delete comment
+                    </button>
                   </div>
                   <p className="text-slate-700 text-sm leading-relaxed">
                     {c.comment}

@@ -6,7 +6,11 @@ import {
   postRecipe,
   deleteRecipe
 } from "../controllers/recipesController.js";
-import {postComment, getAllComments} from "../controllers/commentController.js"
+import {
+  postComment,
+  getAllComments,
+  deleteComment
+} from "../controllers/commentController.js";
 const router = Router();
 
 router.get("/", getAllRecipes);
@@ -15,7 +19,8 @@ router.post("/", postRecipe);
 router.delete("/:id", deleteRecipe);
 
 // router.post("/:id/comments",authMiddleware,postComment)
-router.post("/:id/comments",postComment)
+router.post("/:id/comments", postComment);
+router.delete("/:id/comments", deleteComment);
 
 router.get("/:id/comments", getAllComments);
 

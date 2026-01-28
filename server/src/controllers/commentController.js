@@ -27,7 +27,7 @@ export async function postComment(req, res) {
       `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *;`,
-      [recipeId, userId, name, time, comment, avatar, rating ?? null],
+      [recipeId, userId, name, time, comment, avatar, rating || null],
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -38,11 +38,19 @@ export async function postComment(req, res) {
 
 export async function deleteComment(req, res) {
   const { id } = req.params;
+   const commentId = Number(id);
+
+  // ✅ sanity check: must be a real integer
+  if (!Number.isInteger(commentId)) {
+    return res.status(400).json({ error: "Invalid comment id" });
+  }
   try {
     const result = await pool.query(
-      `DELETE FROM comments WHERE recipe_id = $1 RETURNING *`,
-      [id],
+      `DELETE FROM comments WHERE comments.id = $1 RETURNING *`,
+      [commentId],
     );
+
+    // console.log(result)
     res.status(200).json({
       message: "Comment deleted successfully",
       deletedComment: result.rows[0],

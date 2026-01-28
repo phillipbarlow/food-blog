@@ -8,7 +8,7 @@ async function request(endpoint, options = {}) {
   });
 
  const data = await res.json(); 
-
+console.log(res)
   if (!res.ok) {
     throw new Error(data.error || "Request failed"); 
   }
@@ -60,5 +60,9 @@ export async function getRecipesComments(id){
 
 export function deleteRecipe(id){
   return request(`/recipes/${id}`, { method: "DELETE" })
+}
+
+export function deleteComment(id){
+  return request(`/recipes/${id}/comments`, { method: "DELETE" })
 }
 //create rest of functions
