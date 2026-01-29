@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import {getRecipesComments} from "../api/api.js"
 
 export default function RecipeCard({
   id,
@@ -10,7 +12,20 @@ export default function RecipeCard({
   servings,
   alt,
 }) {
-  // console.log(id)
+  const [comments, setComments] = useState([])
+  useEffect(()=>{
+    const fetchCommentsData = async () =>{
+      try{
+        const recipeComments = await getRecipesComments(id)
+          setComments(recipeComments)
+          // console.log(comments)
+      }catch(err){
+        console.log('Error from RecipeCard fetching comments ', err)
+      }
+    }
+    fetchCommentsData()
+  },[])
+  console.log(comments)
   return (
     <div className="group overflow-hidden rounded-xl shadow-md bg-white transition hover:-translate-y-1 hover:shadow-lg">
       <div className="overflow-hidden">
@@ -61,7 +76,8 @@ export default function RecipeCard({
                 d="M8 10.5h8M8 14h4M5 5h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-5.172a2 2 0 0 0-1.414.586L9 20.999 9.001 18H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"
                 />
             </svg>
-            <span>31</span>
+            
+            <span>{comments.length}</span>
           </button>
           {/* likes */}
           <button className="flex items-center gap-2 hover:text-emerald-600">

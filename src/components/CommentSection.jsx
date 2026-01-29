@@ -64,11 +64,10 @@ export default function RecipeDetail({ id }) {
   };
 
   const handleSaveEdit = async (editId) => {
-    console.log(id,editId);
-    // const newComment = {comment:editValue}
+    console.log(id, editId);
     try {
-      const res = await updateComment(id, editId, {comment:editValue});
-      console.log(res)
+      await updateComment(id, editId, { comment: editValue });
+      // console.log(res)
     } catch (err) {
       console.log("Error from handleUpdateComment ", err);
     }
