@@ -1,7 +1,44 @@
-// src/pages/Signup.jsx
+import { useEffect, useState } from "react";
+import { signup } from "../api/api.js";
 export default function Signup() {
+  const [displayName, setDisplayName] = useState("Bob");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [passwordMatch, setPasswordMatch] = useState(null);
+
+  let passwordClasses;
+  if (passwordMatch === null) {
+    passwordClasses =
+      "border-slate-200 focus:border-slate-400 focus:ring-2 focus:ring-slate-100";
+  } else if (passwordMatch === true) {
+    passwordClasses =
+      "border-emerald-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100";
+  } else {
+    passwordClasses =
+      "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100";
+  }
+  console.log(passwordMatch);
+  useEffect(() => {}, [password, confirmPassword]);
+
+  function formSubmit(e) {
+    e.preventDefault();
+    if (password === confirmPassword && confirmPassword.length > 0) {
+      setPasswordMatch(true);
+    } else if (password.length === 0 && confirmPassword.length === 0) {
+      setPasswordMatch(null);
+    } else {
+      setPasswordMatch(false);
+    }
+    console.log({ displayName, username, password });
+  }
+
   return (
-    <main className="min-h-[calc(100vh-100px)] flex items-center justify-center bg-slate-50 px-4 ">
+    <main
+      className="min-h-[calc(100vh-100px)] flex items-center justify-center bg-slate-50 px-4 "
+      onSubmit={formSubmit}
+    >
       <section className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-6">
         {/* Heading */}
         <header className="space-y-2 text-center">
@@ -18,6 +55,7 @@ export default function Signup() {
               htmlFor="name"
               className="block text-sm font-medium text-slate-700"
             >
+              {" "}
               Name
             </label>
             <input
@@ -27,6 +65,7 @@ export default function Signup() {
               autoComplete="name"
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
               placeholder="John Doe"
+              onChange={(e) => setDisplayName(e.target.value)}
             />
           </div>
           <div className="space-y-1">
@@ -34,15 +73,16 @@ export default function Signup() {
               htmlFor="email"
               className="block text-sm font-medium text-slate-700"
             >
-              Email
+              Username
             </label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
+              id="username"
+              name="username"
+              type="text"
+              autoComplete="userName"
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
-              placeholder="you@example.com"
+              placeholder="username here"
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className="space-y-1">
@@ -53,16 +93,20 @@ export default function Signup() {
               Password
             </label>
             <input
-              id="password"
-              name="password"
+              id="confirmPassword"
+              name="confirmPassword"
               type="password"
               autoComplete="new-password"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
-              placeholder="Create a password"
+              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none passwordClasses`}
+              placeholder="Repeat your password"
+              onChange={(e) => setPassword(e.target.value)}
             />
-            <p className="text-xs text-slate-400">
+            {passwordMatch !== false && <p className="text-xs text-slate-400">
               Use at least 8 characters, including a number.
-            </p>
+            </p>}
+            {passwordMatch === false &&(
+              <p className="text-xs text-red-400">Both passwords must match.</p>
+            )}
           </div>
           <div className="space-y-1">
             <label
@@ -76,8 +120,10 @@ export default function Signup() {
               name="confirmPassword"
               type="password"
               autoComplete="new-password"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+              className={`w-full rounded-lg border px-3 py-2 text-sm outline-none
+              ${passwordClasses}`}
               placeholder="Repeat your password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
 
@@ -86,6 +132,7 @@ export default function Signup() {
             <input
               type="checkbox"
               className="mt-0.5 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+              required
             />
             <span>
               I agree to the{" "}
@@ -102,6 +149,7 @@ export default function Signup() {
           <button
             type="submit"
             className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition focus:outline-none focus:ring-2 focus:ring-emerald-300"
+            // disabled={!passwordMatch}
           >
             Sign up
           </button>

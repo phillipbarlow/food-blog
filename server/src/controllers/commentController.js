@@ -97,7 +97,6 @@ export async function updateComment(req, res) {
     );
 
     if (result.rows.length === 0) {
-      console.log(req.params, "line 101");
       return res.status(404).json({ error: "Comment not found" });
     }
 

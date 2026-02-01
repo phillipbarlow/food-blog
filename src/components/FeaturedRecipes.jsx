@@ -8,10 +8,10 @@ export default function FeaturedRecipes() {
     const fetchRecipes = async () => {
       try {
         const data = await getRecipes();
-        const parsed = data.map((recipe) => ({
+        const parsed = data.recipes.map((recipe) => ({
           ...recipe,
           ingredients: JSON.parse(recipe.ingredients),
-          instructions: JSON.parse(recipe.instructions),
+          instructions: JSON.parse(recipe.instructions)
         }));
         setRecipes(parsed);
       } catch (err) {

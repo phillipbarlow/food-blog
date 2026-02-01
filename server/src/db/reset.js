@@ -12,9 +12,9 @@ async function reset() {
     await pool.query(`
       CREATE TABLE users (
         id SERIAL PRIMARY KEY,
-        email TEXT NOT NULL UNIQUE,
-        password_hash TEXT NOT NULL,
-        display_name TEXT
+        display_name TEXT,
+        username TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL
       );
     `);
     await pool.query(`
@@ -46,10 +46,10 @@ async function reset() {
 
     for (let i = 1; i <= 50; i++) {
       const result = await pool.query(
-        `INSERT INTO users (email, password_hash, display_name)
+        `INSERT INTO users (display_name, username, password_hash)
                 VALUES ($1, $2, $3)
-                RETURNING id;`,
-        [`user${i}@test.com`, "fake_hash", `User ${i}`],
+                RETURNING *;`,
+        [`User ${i}`,`user${i}@test.com`, "fake_hash" ],
       );
       userIds.push(result.rows[0].id);
     }

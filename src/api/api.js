@@ -18,10 +18,10 @@ async function request(endpoint, options = {}) {
 
 /* ---- AUTH ---- */
 
-export function signup(email, password, display_name) {
+export function signup(payload) {
   return request("/auth/signup", {
     method: "POST",
-    body: JSON.stringify({ email, password, display_name }),
+    body: JSON.stringify({payload}),
   });
 }
 

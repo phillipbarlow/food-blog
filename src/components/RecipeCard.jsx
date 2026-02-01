@@ -25,7 +25,7 @@ export default function RecipeCard({
     }
     fetchCommentsData()
   },[])
-  console.log(comments)
+
   return (
     <div className="group overflow-hidden rounded-xl shadow-md bg-white transition hover:-translate-y-1 hover:shadow-lg">
       <div className="overflow-hidden">

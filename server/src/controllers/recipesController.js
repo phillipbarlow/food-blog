@@ -16,10 +16,14 @@ export async function getAllRecipes(req, res) {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "No recipes found" });
     }
-    res.json(result.rows);
+    res.json({
+      message:"Recipes recieved successfully",
+      recipes:result.rows});
   } catch (error) {
     console.error("Error fetching recipes:", error);
-    res.status(500).json({ error: "Database error line 15" });
+    res
+      .status(500)
+      .json({ error: `Database error from getAllRecipes ${error}` });
   }
 }
 
@@ -35,7 +39,10 @@ export async function getSingleRecipe(req, res) {
       return res.status(404).json({ error: "Recipe not found" });
     }
 
-    res.json(result.rows[0]);
+    res.json({
+      message: "Recipe recieved successfully",
+      recipe: result.rows[0],
+    });
   } catch (err) {
     res.status(500).json({ err: `Database error ${err}` });
   }
@@ -45,7 +52,6 @@ export async function postRecipe(req, res) {
   const { title, ingredients, instructions, category } = req.body;
   const ingredientsString = JSON.stringify(ingredients);
   const instructionsString = JSON.stringify(instructions);
-  console.log(title, ingredients, instructions, category);
   const image = "/default-items-image.png";
   if (!title) {
     return res.status(400).json({ error: "Title is missing" });
@@ -67,13 +73,12 @@ export async function postRecipe(req, res) {
        RETURNING *`,
       [title, ingredientsString, instructionsString, category, image || null],
     );
-    console.log("Back-end result row:", result.rows[0]);
-
-    res.status(201).json(result.rows[0]);
+    res.status(201).json({
+      message: "Recipe posted successfully",
+      recipe: result.rows[0],
+    });
   } catch (error) {
-    console.log(error, "-- line 67");
-    console.error("❌ Error inserting recipe:", error);
-    res.status(500).json({ error: "Database error line 50" });
+    res.status(500).json({ error: `Database error from postRecipe ${error}` });
   }
 }
 
@@ -90,10 +95,12 @@ export async function deleteRecipe(req, res) {
     }
     return res.status(200).json({
       message: "recipe and comments deleted successfully",
-      deletedRecipe: result.rows[0],
+      recipe: result.rows[0],
     });
-  } catch (err) {
-    console.log("Error deleting Recipe", err);
-    res.status(500).json({ error: "Database error from comments" });
+  } catch (error) {
+    console.log("Error deleting Recipe", error);
+    res
+      .status(500)
+      .json({ error: `Database error from deleteRecipe ${error}` });
   }
 }

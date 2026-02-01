@@ -15,8 +15,8 @@ export default function RecipeDetail() {
           setRecipe(null);
           return;
         }
-        const data = await res.json();
-        data.ingredients = JSON.parse(data.ingredients);
+        let data = await res.json();
+        data = data.recipe;
         data.instructions = JSON.parse(data.instructions);
         setRecipe(data);
       } catch (error) {

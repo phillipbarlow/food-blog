@@ -1,7 +1,7 @@
 // import {login} from "../api/api";
 // import {token} from "../api/api"
 
-export default function Input() {
+export default function Login() {
   return (
     // Global container
     <main className="h-[calc(100vh-100px)] flex justify-center items-center">
