@@ -3,8 +3,9 @@ import jwt from "jsonwebtoken";
 import { pool } from "../db/pool.js";
 
 export async function signup(req, res) {
-  const { display_name, username, password } = req.body;
-
+  const { display_name, username, password } = req.body.payload;
+console.log("controller", display_name, username, password )
+console.log(req.body.payload)
   // if (!display_name) {
   //   return res.status(400).json({ error: "display_name is missing" });
   // }

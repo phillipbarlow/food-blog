@@ -5,7 +5,6 @@ export default function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
   const [passwordMatch, setPasswordMatch] = useState(null);
 
   let passwordClasses;
@@ -19,19 +18,27 @@ export default function Signup() {
     passwordClasses =
       "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100";
   }
-  console.log(passwordMatch);
-  useEffect(() => {}, [password, confirmPassword]);
 
-  function formSubmit(e) {
+
+  const formSubmit = async (e) => {
     e.preventDefault();
-    if (password === confirmPassword && confirmPassword.length > 0) {
-      setPasswordMatch(true);
-    } else if (password.length === 0 && confirmPassword.length === 0) {
-      setPasswordMatch(null);
-    } else {
+    if (password !== confirmPassword) {
       setPasswordMatch(false);
+      return
     }
-    console.log({ displayName, username, password });
+    if (password.length === 0 && confirmPassword.length === 0) {
+      setPasswordMatch(null);
+      return
+    }
+      setPasswordMatch(true);
+    try{
+        const payload = {display_name:displayName,username, password}
+        console.log("Sending payload:", payload);
+        const result = await signup(payload)
+        console.log("Success",result)
+      }catch(err){
+        console.log('Error from signup ',err)
+      }
   }
 
   return (

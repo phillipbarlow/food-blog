@@ -8,7 +8,7 @@ async function request(endpoint, options = {}) {
   });
 
   const data = await res.json();
-  // console.log(res);
+  console.log(res);
   if (!res.ok) {
     throw new Error(data.error || "Request failed");
   }
