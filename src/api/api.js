@@ -8,7 +8,7 @@ async function request(endpoint, options = {}) {
   });
 
   const data = await res.json();
-  console.log(res);
+  // console.log(res);
   if (!res.ok) {
     throw new Error(data.error || "Request failed");
   }
@@ -21,14 +21,14 @@ async function request(endpoint, options = {}) {
 export function signup(payload) {
   return request("/auth/signup", {
     method: "POST",
-    body: JSON.stringify({payload}),
+    body: JSON.stringify(payload),
   });
 }
 
-export function login(email, password) {
+export function login(payload) {
   return request("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify(payload),
   });
 }
 

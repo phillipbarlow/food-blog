@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { signup } from "../api/api.js";
+import { useNavigate } from "react-router-dom";
+
 export default function Signup() {
-  const [displayName, setDisplayName] = useState("Bob");
+  const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordMatch, setPasswordMatch] = useState(null);
+  const navigate = useNavigate();
 
   let passwordClasses;
   if (passwordMatch === null) {
@@ -36,8 +39,11 @@ export default function Signup() {
         console.log("Sending payload:", payload);
         const result = await signup(payload)
         console.log("Success",result)
+        navigate("/");
       }catch(err){
         console.log('Error from signup ',err)
+      }finally{
+        setDisplayName("")
       }
   }
 
