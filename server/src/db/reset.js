@@ -24,11 +24,11 @@ async function reset() {
         ingredients TEXT NOT NULL,
         instructions TEXT NOT NULL,
         category TEXT NOT NULL,
-        image TEXT
+        image TEXT,
+        created_by TEXT NOT NULL
         );
         `);
 
-    // 🔽 updated comments schema
     await pool.query(`
           CREATE TABLE comments (
             id SERIAL PRIMARY KEY,
@@ -42,18 +42,19 @@ async function reset() {
             );
             `);
 
-    const userIds = [];
-
-    for (let i = 1; i <= 50; i++) {
-      const result = await pool.query(
-        `INSERT INTO users (display_name, username, password_hash)
+            const userIds = [];
+            
+            for (let i = 1; i <= 50; i++) {
+              const result = await pool.query(
+                `INSERT INTO users (display_name, username, password_hash)
                 VALUES ($1, $2, $3)
                 RETURNING *;`,
-        [`User ${i}`,`user${i}@test.com`, "fake_hash" ],
-      );
-      userIds.push(result.rows[0].id);
-    }
-
+                [`User ${i}`,`user${i}@test.com`, "fake_hash" ],
+              );
+              userIds.push(result.rows[0].id);
+            }
+            
+    // Recipe seed data
     for (let i = 1; i <= 50; i++) {
       const ingredientsArr = [
         `ingredient${i}`,
@@ -67,16 +68,18 @@ async function reset() {
       ];
       const ingredientsString = JSON.stringify(ingredientsArr);
       const instructionsString = JSON.stringify(instructionsArr);
+      const username = "Nelly"
       const image = "/default-items-image.png";
       await pool.query(
-        `INSERT INTO recipes (title, ingredients, instructions, category, image)
-         VALUES ($1, $2, $3, $4, $5);`,
+        `INSERT INTO recipes (title, ingredients, instructions, category, image, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6);`,
         [
           `title ${i}`,
           ingredientsString,
           instructionsString,
           i % 2 === 0 ? "cooking" : "baking",
           image,
+          username
         ],
       );
     }

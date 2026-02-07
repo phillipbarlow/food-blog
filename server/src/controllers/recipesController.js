@@ -1,4 +1,5 @@
 import { pool } from "../db/pool.js";
+import jwt from "jsonwebtoken";
 
 export async function getAllRecipes(req, res) {
   const { category } = req.query;
@@ -17,8 +18,9 @@ export async function getAllRecipes(req, res) {
       return res.status(404).json({ error: "No recipes found" });
     }
     res.json({
-      message:"Recipes recieved successfully",
-      recipes:result.rows});
+      message: "Recipes recieved successfully",
+      recipes: result.rows,
+    });
   } catch (error) {
     console.error("Error fetching recipes:", error);
     res
@@ -53,6 +55,11 @@ export async function postRecipe(req, res) {
   const ingredientsString = JSON.stringify(ingredients);
   const instructionsString = JSON.stringify(instructions);
   const image = "/default-items-image.png";
+  const token = req.headers.authorization?.split(" ")[1];
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  const username = decoded.username; // <-- the creator
+
   if (!title) {
     return res.status(400).json({ error: "Title is missing" });
   }
@@ -68,10 +75,17 @@ export async function postRecipe(req, res) {
 
   try {
     const result = await pool.query(
-      `INSERT INTO recipes (title,ingredients ,instructions ,category, image)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO recipes (title,ingredients ,instructions ,category, image, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
-      [title, ingredientsString, instructionsString, category, image || null],
+      [
+        title,
+        ingredientsString,
+        instructionsString,
+        category,
+        image || null,
+        username,
+      ],
     );
     res.status(201).json({
       message: "Recipe posted successfully",
