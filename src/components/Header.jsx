@@ -1,12 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import "../styles/nav.css";
 import { useState } from "react";
 import logo from "../images/cbs.jpeg";
-import PostRecipeForm from "../pages/PostRecipeForm";
+import { useAuth } from "../hooks/userAuth";
 export default function Nav() {
   const [open, setOpen] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const {user,logout,isAuthenticated} = useAuth();
+  const navigate = useNavigate();
 
+   function handleLogout (){
+     logout()
+     navigate("/");
+  }
   return (
     // Global container
     <div>
@@ -45,7 +50,7 @@ export default function Nav() {
             >
               <li
                 className={`flex space-x-5 lg:hidden mt-12 ${
-                  loggedIn ? "hidden" : "visible"
+                  isAuthenticated ? "hidden" : "visible"
                 }`}
               >
                 <section>
@@ -109,13 +114,13 @@ export default function Nav() {
               className="h-55 w-55 p-5 rounded-full "
             />
           </Link>
-          <div className="m-3 lg:order-3  ">
-            <Link
-              className="cursor-pointer bg-[#CC6330] px-6 py-3 text-white rounded-md shadow-2xl hover:bg-[#CC6330]/80 transition"
-              to={loggedIn ? "#" : "/login"}
+          <div
+              className="m-3 lg:order-3 cursor-pointer bg-[#CC6330] px-6 py-3 text-white rounded-md shadow-2xl hover:bg-[#CC6330]/80 transition"
+              to={isAuthenticated ? "#" : "/login"}
             >
-              {loggedIn ? "Hey Phil" : "Login"}
-            </Link>
+              {isAuthenticated ? 
+              <button onClick={()=>handleLogout()}>{`${user?.username || "user"}`}</button>: 
+              <Link className="cursor-pointer bg-[#CC6330] px-6 py-3 text-white rounded-md shadow-2xl hover:bg-[#CC6330]/80 transition" to="/login">Login!</Link>}
           </div>
         </nav>
       </header>

@@ -1,16 +1,20 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, data } from "react-router-dom";
 import CommentSection from "../components/CommentSection";
 import { useEffect, useState } from "react";
 import { deleteRecipe } from "../api/api.js";
+import { useAuth } from "../hooks/userAuth.js";
 export default function RecipeDetail() {
   const [recipe, setRecipe] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const { id } = useParams();
+  const { isAuthenticated, user } = useAuth();
+  // console.log(user)
   useEffect(() => {
     setLoading(true);
     const fetchRecipe = async () => {
       try {
         const res = await fetch(`http://localhost:5001/recipes/${id}`);
+        console.log(id);
         if (!res.ok) {
           setRecipe(null);
           return;
@@ -18,6 +22,7 @@ export default function RecipeDetail() {
         let data = await res.json();
         data = data.recipe;
         data.instructions = JSON.parse(data.instructions);
+        console.log(data);
         setRecipe(data);
       } catch (error) {
         console.log("fetch error ", error);
@@ -59,17 +64,21 @@ export default function RecipeDetail() {
       <main className="max-w-5xl mx-auto p-6 bg-gray-50 lg:rounded-xl pt-18 lg:mt-12">
         {/* Main page */}
         <div className="grid md:grid-cols-2 sm:gap-0 xl:gap-8 items-start">
-          <img
-            src={recipe.image}
-            alt={recipe.title}
-            className="w-full rounded-xl  object-cover"
-          />
-          <button
-            onClick={handleDelete}
-            className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400"
-          >
-            Delete recipes
-          </button>
+          {/* <div className="space-y-4"> */}
+            <img
+              src={recipe.image}
+              alt={recipe.title}
+              className="w-full rounded-xl  object-cover"
+            />
+            {isAuthenticated && user?.username === recipe.created_by && (
+              <button
+                onClick={handleDelete}
+                className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400"
+              >
+                Delete recipes
+              </button>
+            )}
+          {/* </div> */}
 
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">
@@ -81,6 +90,7 @@ export default function RecipeDetail() {
               <span>Serves: {recipe.servings}</span>
             </div>
             <h2 className="text-xl font-semibold mb-2 ">Ingredients</h2>
+            <p>{recipe.created_by}</p>
             {/* <ul className="list-disc pl-5 space-y-1 mb-6 text-gray-800">
             {recipe.map((ingred, i) => (
               <li key={i}>{ingred}</li>

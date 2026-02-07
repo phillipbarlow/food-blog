@@ -43,8 +43,7 @@ export default function PostRecipeForm() {
   const handlePost = async (pay) => {
     try {
       const response = await postRecipe(pay);
-      console.log(response)
-      navigate(`/recipes/${response.id}`);
+      navigate(`/recipes/${response.recipe.id}`);
     }catch (err) {
       console.log("Error from handlePost", err);
     }
@@ -67,7 +66,6 @@ export default function PostRecipeForm() {
       category,
     };
     handlePost(payLoad);
-    // console.log(payLoad);
   }
 
   return (

@@ -7,8 +7,8 @@ export default function Recipes() {
     const fetchRecipes = async () => {
       try {
         const allRecipes = getRecipes();
-        // console.log(allRecipes)
         setRecipes(allRecipes);
+        // console.log(allRecipes)
       } catch (error) {
         console.error("Fetch error:", error);
       }
@@ -24,6 +24,7 @@ export default function Recipes() {
       ) : (
         <ul className="md:grid-cols-2 gap-6">
           {recipes.map((r) => (
+              // console.log(r)
             <li key={r.id} className="border rounded-lg p-4 bg-white shadow-sm">
               <h2 className="text-xl font-semibold">{r.title}</h2>
               <p className="text-sm text-gray-600">{r.description}</p>

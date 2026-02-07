@@ -6,9 +6,11 @@ import {
   deleteComment,
   updateComment,
 } from "../api/api.js";
+import { useAuth } from "../hooks/userAuth.js";
 
 export default function RecipeDetail({ id }) {
-  const user = "Phil";
+   const {user} = useAuth()
+
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [isPosting, setIsPosting] = useState(false);
@@ -32,7 +34,7 @@ export default function RecipeDetail({ id }) {
     if (comment.trim() === "") return;
     setIsPosting(true);
     const newComment = {
-      name: user,
+      name: user.displayName,
       time: new Date().toISOString().replace("T", " ").slice(0, 16),
       comment,
       avatar: "/user.png",

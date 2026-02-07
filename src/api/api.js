@@ -8,7 +8,6 @@ async function request(endpoint, options = {}) {
   });
 
   const data = await res.json();
-  // console.log(res);
   if (!res.ok) {
     throw new Error(data.error || "Request failed");
   }
@@ -17,6 +16,7 @@ async function request(endpoint, options = {}) {
 }
 
 /* ---- AUTH ---- */
+const token = localStorage.getItem("token");
 
 export function signup(payload) {
   return request("/auth/signup", {
@@ -48,8 +48,14 @@ export function postComment(id, payload) {
 }
 
 export function postRecipe(payload) {
+  const token = localStorage.getItem("token");
+console.log(token)
   return request("/recipes", {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json" 
+    },
     body: JSON.stringify(payload),
   });
 }
