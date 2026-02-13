@@ -60,6 +60,7 @@ export default function RecipeDetail() {
       </main>
     );
   } else {
+    console.log(recipe)
     return (
       <main className="max-w-5xl mx-auto p-6 bg-gray-50 lg:rounded-xl pt-18 lg:mt-12">
         {/* Main page */}

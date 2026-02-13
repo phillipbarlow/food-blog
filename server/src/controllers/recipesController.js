@@ -51,14 +51,14 @@ export async function getSingleRecipe(req, res) {
 }
 
 export async function postRecipe(req, res) {
-  const { title, ingredients, instructions, category } = req.body;
+  const { title, ingredients, instructions, category, image } = req.body;
   const ingredientsString = JSON.stringify(ingredients);
   const instructionsString = JSON.stringify(instructions);
-  const image = "/default-items-image.png";
+  // const image = "/default-items-image.png";
   const token = req.headers.authorization?.split(" ")[1];
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  const username = decoded.username; // <-- the creator
+  const username = decoded.username; 
 
   if (!title) {
     return res.status(400).json({ error: "Title is missing" });

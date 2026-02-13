@@ -2,25 +2,43 @@ import { useState } from "react";
 import "../styles/recipeForm.css";
 import { postRecipe } from "../api/api.js";
 import { useNavigate } from "react-router-dom";
+import { uploadImageToCloudinary } from "../utils/uploadToCloudinary.js";
+import { shrink } from "../utils/shrink.js";
 export default function PostRecipeForm() {
   const [ingredients, setIngredients] = useState([""]);
   const [steps, setSteps] = useState([""]);
   const [category, setCategory] = useState("cooking");
   const [title, setTitle] = useState("");
+
+  const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
+
+  async function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+
+    const smallFile = await shrink(file)
+    const url = await uploadImageToCloudinary(smallFile);
+    setImageFile(url);
+
+    console.log("Uploaded image URL:", url);
+  }
 
   function handleIngredientChange(value, index) {
     const updated = [...ingredients];
     updated[index] = value;
     setIngredients(updated);
   }
-  // console.log(id)
+
   function addIngredient() {
     setIngredients((curr) => [...curr, ""]);
   }
 
   function removeIngredient(index) {
-    setIngredients((curr) =>  curr.filter((_, i) => i !== index));
+    setIngredients((curr) => curr.filter((_, i) => i !== index));
   }
   function handleStepChange(value, index) {
     const updated = [...steps];
@@ -44,28 +62,44 @@ export default function PostRecipeForm() {
     try {
       const response = await postRecipe(pay);
       navigate(`/recipes/${response.recipe.id}`);
-    }catch (err) {
+    } catch (err) {
       console.log("Error from handlePost", err);
     }
   };
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const trimmerTitle = title.trim();
-    const trimmedIngredients = ingredients
-      .map((i) => i.trim())
-      .filter((item) => item !== "");
-    const trimmedInstructions = steps
-      .map((i) => i.trim())
-      .filter((item) => item !== "");
+    setLoading(true);
 
-    const payLoad = {
-      title: trimmerTitle,
-      ingredients: trimmedIngredients,
-      instructions: trimmedInstructions,
-      category,
-    };
-    handlePost(payLoad);
+    try {
+      let imageUrl = null;
+
+      if (imageFile) {
+        imageUrl = await uploadImageToCloudinary(imageFile);
+      }
+      const trimmerTitle = title.trim();
+      const trimmedIngredients = ingredients
+        .map((i) => i.trim())
+        .filter((item) => item !== "");
+      const trimmedInstructions = steps
+        .map((i) => i.trim())
+        .filter((item) => item !== "");
+
+      const payLoad = {
+        title: trimmerTitle,
+        ingredients: trimmedIngredients,
+        instructions: trimmedInstructions,
+        category,
+        image: imageUrl || null,
+      };
+
+      handlePost(payLoad);
+    } catch (err) {
+      console.log("Error submitting recipe:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -211,6 +245,20 @@ export default function PostRecipeForm() {
             <option value="cooking">Cooking recipe</option>
             <option value="baking">Baking recipe</option>
           </select>
+        </section>
+        <section>
+          {loading && <p className="text-sm text-gray-600 mt-1">...Loading</p>}
+          {error && <p className="text-sm text-red-600 mt-1">Error: {error}</p>}
+          <input
+            type="file"
+            onChange={handleImageUpload}
+          />
+
+          {imageFile && (
+            <p className="text-sm text-gray-600 mt-1">
+              Selected file: {imageFile.name}
+            </p>
+          )}
         </section>
 
         <div className="form-actions">

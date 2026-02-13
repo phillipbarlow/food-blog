@@ -16,7 +16,7 @@ async function request(endpoint, options = {}) {
 }
 
 /* ---- AUTH ---- */
-const token = localStorage.getItem("token");
+// const token = localStorage.getItem("token");
 
 export function signup(payload) {
   return request("/auth/signup", {
