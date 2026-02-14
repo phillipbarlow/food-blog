@@ -1,5 +1,6 @@
 import { pool } from "../db/pool.js";
 import jwt from "jsonwebtoken";
+import cloudinary from "../../config/cloudinary.js";
 
 export async function getAllRecipes(req, res) {
   const { category } = req.query;
@@ -76,7 +77,7 @@ export async function postRecipe(req, res) {
   try {
     const result = await pool.query(
       `INSERT INTO recipes (title,ingredients ,instructions ,category, image, created_by, image_id)
-       VALUES ($1, $2, $3, $4, $5, $6)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
       [
         title,
@@ -85,10 +86,11 @@ export async function postRecipe(req, res) {
         category,
         image || null,
         username || null,
-        image_id
+        image_id || null
       ],
     );
-    console.log(image)
+    console.log(image,'Image url')
+    console.log(image_id,"Image id")
     res.status(201).json({
       message: "Recipe posted successfully",
       recipe: result.rows[0],
@@ -108,6 +110,12 @@ export async function deleteRecipe(req, res) {
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "No recipe found" });
+    }
+    const {image_id} = result.rows[0]
+console.log(image_id,'from delete')
+
+     if (image_id) {
+      await cloudinary.uploader.destroy(image_id);
     }
 
     return res.status(200).json({
