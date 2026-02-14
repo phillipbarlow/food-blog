@@ -1,5 +1,7 @@
 /* eslint-env node */
 import { pool } from "./pool.js";
+// console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
+// console.log("DATABASE_URL set:", !!process.env.DATABASE_URL);
 
 async function reset() {
   try {
@@ -25,7 +27,8 @@ async function reset() {
         instructions TEXT NOT NULL,
         category TEXT NOT NULL,
         image TEXT,
-        created_by TEXT NOT NULL
+        created_by TEXT NOT NULL,
+        image_id TEXT
         );
         `);
 

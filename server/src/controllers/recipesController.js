@@ -51,7 +51,7 @@ export async function getSingleRecipe(req, res) {
 }
 
 export async function postRecipe(req, res) {
-  const { title, ingredients, instructions, category, image } = req.body;
+  const { title, ingredients, instructions, category, image, image_id } = req.body;
   const ingredientsString = JSON.stringify(ingredients);
   const instructionsString = JSON.stringify(instructions);
   // const image = "/default-items-image.png";
@@ -75,7 +75,7 @@ export async function postRecipe(req, res) {
 
   try {
     const result = await pool.query(
-      `INSERT INTO recipes (title,ingredients ,instructions ,category, image, created_by)
+      `INSERT INTO recipes (title,ingredients ,instructions ,category, image, created_by, image_id)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
       [
@@ -84,9 +84,11 @@ export async function postRecipe(req, res) {
         instructionsString,
         category,
         image || null,
-        username,
+        username || null,
+        image_id
       ],
     );
+    console.log(image)
     res.status(201).json({
       message: "Recipe posted successfully",
       recipe: result.rows[0],
@@ -107,10 +109,12 @@ export async function deleteRecipe(req, res) {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "No recipe found" });
     }
+
     return res.status(200).json({
       message: "recipe and comments deleted successfully",
       recipe: result.rows[0],
     });
+    
   } catch (error) {
     console.log("Error deleting Recipe", error);
     res
