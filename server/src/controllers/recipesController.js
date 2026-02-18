@@ -89,8 +89,7 @@ export async function postRecipe(req, res) {
         image_id || null
       ],
     );
-    console.log(image,'Image url')
-    console.log(image_id,"Image id")
+
     res.status(201).json({
       message: "Recipe posted successfully",
       recipe: result.rows[0],

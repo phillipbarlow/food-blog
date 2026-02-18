@@ -50,7 +50,6 @@ export async function deleteComment(req, res) {
       [commentId],
     );
 
-    // console.log(result)
     res.status(200).json({
       message: "Comment deleted successfully",
       deletedComment: result.rows[0],
@@ -79,7 +78,7 @@ export async function getAllComments(req, res) {
 export async function updateComment(req, res) {
   const { id, commentId } = req.params;
   const { comment, rating} = req.body;
-// console.log(id,commentId)
+
   if (!comment) {
     return res.status(400).json({
       error: "Missing comment field",

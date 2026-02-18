@@ -54,11 +54,10 @@ export async function login(req, res) {
     ]);
 
     if (result.rows.length === 0) {
-      return res.status(401).json({ error: "Invalid username or password" });
+      return res.status(401).json({ error: "Invalid username!" });
     }
 
     const user = result.rows[0];
-    // console.log(user, "from line 61");
 
     const match = await bcrypt.compare(password, user.password_hash);
 
@@ -69,22 +68,61 @@ export async function login(req, res) {
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );
-    // console.log(JSON.parse(atob(token.split(".")[1])),'---token')
-    // console.log(token.id,'---id')
-    // console.log(user.id,user.display_name,'line 66 ---')
-
+    // console.log(token)
     res.status(200).json({
       message: "Login successful",
-      user:{
-        id:user.id,
+      user: {
+        id: user.id,
         displayName: user.display_name,
-        username
+        username,
       },
-      token
+      token,
     });
-    
   } catch (err) {
     console.log(err, "Login failed!!");
     res.status(500).json({ error: "Login failed" });
+  }
+}
+
+export async function updateUserSettings(req, res) {
+  try {
+    const { password, newPassword, newUsername, display_name } = req.body;
+    const userId = req.user.id;
+
+    console.log(userId, "-- from auth controller");
+
+    const userResult = await pool.query(`SELECT * FROM users WHERE id = $1`, [
+      userId,
+    ]);
+    const user = userResult.rows[0];
+    const isMatch = await bcrypt.compare(password, user.password_hash);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+    let hashedPassword;
+    if (newPassword) {
+      hashedPassword = await bcrypt.hash(newPassword, 10);
+    }
+    const result = await pool.query(
+      `UPDATE users
+   SET display_name = COALESCE($1, display_name),
+        username = COALESCE($2, username),
+       password_hash = COALESCE($3, password_hash)
+   WHERE id = $4
+   RETURNING id, username;`,
+      [display_name || null, newUsername || null, hashedPassword || null, userId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "user not found" });
+    }
+
+    res.status(200).json({
+      message: "Update successful"
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Database Error from users patch" });
+    console.log(error);
   }
 }
