@@ -8,49 +8,55 @@ import {
 } from "../api/api.js";
 import { useAuth } from "../hooks/userAuth.js";
 
-export default function RecipeDetail({ id }) {
+export default function CommentSection({ id }) {
    const {user} = useAuth()
-
-  const [comment, setComment] = useState("");
-  const [comments, setComments] = useState([]);
-  const [isPosting, setIsPosting] = useState(false);
-
-  const [editingId, setEditingId] = useState(null);
-  const [editValue, setEditValue] = useState("");
-
-  useEffect(() => {
-    const fetchRecipeComments = async () => {
+   const [comment, setComment] = useState("");
+   const [comments, setComments] = useState([]);
+   const [isPosting, setIsPosting] = useState(false);
+   
+   const [editingId, setEditingId] = useState(null);
+   const [editValue, setEditValue] = useState("");
+  //  console.log(user,'--user from comment section')
+   
+   useEffect(() => {
+     const fetchRecipeComments = async () => {
+       try {
+         const data = await getRecipesComments(id);
+        //  console.log(data,'from line 25')
+         setComments(data.comments);
+         console.log(data.comments,"-- from comment section line 26")
+        } catch (error) {
+          console.log("Error from fetching recipes own comments ", error);
+        }
+      };
+      fetchRecipeComments();
+    }, [id,isPosting]);
+    
+    const handlePost = async () => {
+      if (comment.trim() === "") return;
+      setIsPosting(true);
+      const newComment = {
+        userId:user.id,
+        name: user.displayName,
+        username:user.username,
+        time: new Date().toISOString().replace("T", " ").slice(0, 16),
+        comment,
+        avatar: "/user.png",
+        rating: null,
+      };
       try {
-        const data = await getRecipesComments(id);
-        setComments(data);
+        const created = await postComment(id, newComment);
+        // console.log(created)
+        setComments((prevComments) => [created, ...prevComments]);
+        setComment("");
+        // console.log(comments,'--line 52')
       } catch (error) {
-        console.log("Error from fetching recipes own comments ", error);
+        console.log("Error posting comment:", error);
+      } finally {
+        setIsPosting(false);
       }
     };
-    fetchRecipeComments();
-  }, [id]);
-
-  const handlePost = async () => {
-    if (comment.trim() === "") return;
-    setIsPosting(true);
-    const newComment = {
-      name: user.displayName,
-      time: new Date().toISOString().replace("T", " ").slice(0, 16),
-      comment,
-      avatar: "/user.png",
-      rating: null,
-    };
-    try {
-      const created = await postComment(id, newComment);
-      setComments((prevComments) => [created, ...prevComments]);
-      setComment("");
-    } catch (error) {
-      console.log("Error posting comment:", error);
-    } finally {
-      setIsPosting(false);
-    }
-  };
-
+    
   const handleDeleteComment = async (commentId) => {
     try {
       await deleteComment(commentId);
@@ -66,7 +72,7 @@ export default function RecipeDetail({ id }) {
   };
 
   const handleSaveEdit = async (editId) => {
-    console.log(id, editId);
+    // console.log(id, editId);
     try {
       await updateComment(id, editId, { comment: editValue });
       // console.log(res)
@@ -81,7 +87,7 @@ export default function RecipeDetail({ id }) {
   };
 
   const startEditing = (data) => {
-    console.log(data, "--from 75");
+    // console.log(data, "--from 75");
     setEditingId(data.id);
     setEditValue(data.comment);
   };
@@ -120,7 +126,7 @@ export default function RecipeDetail({ id }) {
       <div className="mt-6 space-y-6">
         {comments.length > 0 &&
           comments.map((c) => {
-            // console.log(c);
+            console.log(c);
             const isEditing = editingId === c.id;
             return (
               <div key={c.id} className="flex items-start gap-4">
@@ -131,7 +137,7 @@ export default function RecipeDetail({ id }) {
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
-                    <p className="font-semibold text-slate-900">{c.name}</p>
+                    <p className="font-semibold text-slate-900">{c.display_name}</p>
                     <span className="text-sm text-slate-500">{c.time}</span>
                     <button
                       type="button"

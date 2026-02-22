@@ -40,8 +40,8 @@ export async function signup(req, res) {
 
 export async function login(req, res) {
   try {
-    const { username, password } = req.body;
-    // console.log(req.body,'line 44')
+    const { username, password} = req.body;
+    console.log(req.body,'line 44 auth')
     if (!username) {
       return res.status(400).json({ error: "Enter username" });
     }
@@ -58,7 +58,7 @@ export async function login(req, res) {
     }
 
     const user = result.rows[0];
-
+console.log(user,"--from user 61")
     const match = await bcrypt.compare(password, user.password_hash);
 
     if (!match) return res.status(401).json({ error: "Invalid password" });
@@ -75,6 +75,7 @@ export async function login(req, res) {
         id: user.id,
         displayName: user.display_name,
         username,
+        
       },
       token,
     });

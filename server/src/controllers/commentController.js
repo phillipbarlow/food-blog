@@ -1,9 +1,8 @@
 import { pool } from "../db/pool.js";
-
+import { getCommentsWithUsers } from "../db/comments.js";
 export async function postComment(req, res) {
   const recipeId = req.params.id;
-  const { userId = 1, name = "phil", comment, rating } = req.body;
-
+  const { userId, displayName, comment, rating, name } = req.body;
   const time = new Date().toISOString().replace("T", " ").slice(0, 16);
   const avatar = "/user.png";
 
@@ -15,10 +14,17 @@ export async function postComment(req, res) {
   // }
 
   // default validation while auth is not set
+  // console.log(
+  //   userId,
+  //   displayName,
+  //   comment,
+  //   username,
+  //   "--from comment controller line 17",
+  // );
   if (!recipeId || !comment) {
     return res.status(400).json({
       error: "Missing required fields",
-      details: { recipeId, userId, name, comment, rating },
+      details: { recipeId, userId, displayName, comment, rating },
     });
   }
 
@@ -40,10 +46,6 @@ export async function deleteComment(req, res) {
   const { id } = req.params;
   const commentId = Number(id);
 
-  // ✅ sanity check: must be a real integer
-  // if (!Number.isInteger(commentId)) {
-  //   return res.status(400).json({ error: "Invalid comment id" });
-  // }
   try {
     const result = await pool.query(
       `DELETE FROM comments WHERE comments.id = $1 RETURNING *`,
@@ -64,11 +66,15 @@ export async function getAllComments(req, res) {
   const { id } = req.params;
 
   try {
-    const result = await pool.query(
-      `SELECT * FROM comments WHERE recipe_id = $1 ORDER BY id DESC`,
-      [id],
-    );
-    return res.json(result.rows);
+    // const result = await pool.query(
+    //   `SELECT * FROM comments WHERE recipe_id = $1 ORDER BY id DESC`,
+    //   [id],
+    // );
+    const result = await getCommentsWithUsers(id);
+    console.log(result,"-- FROM comment controller")
+    return res.status(200).json({
+      comments: result,
+    });
   } catch (err) {
     console.log("Error getting comments", err);
     res.status(500).json({ error: "Database Error from comments" });
@@ -77,7 +83,7 @@ export async function getAllComments(req, res) {
 
 export async function updateComment(req, res) {
   const { id, commentId } = req.params;
-  const { comment, rating} = req.body;
+  const { comment, rating } = req.body;
 
   if (!comment) {
     return res.status(400).json({

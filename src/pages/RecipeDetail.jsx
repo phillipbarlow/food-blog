@@ -14,16 +14,16 @@ export default function RecipeDetail() {
     const fetchRecipe = async () => {
       try {
         const res = await fetch(`http://localhost:5001/recipes/${id}`);
-        console.log(id);
+
         if (!res.ok) {
           setRecipe(null);
           return;
         }
-        let data = await res.json();
-        data = data.recipe;
-        data.instructions = JSON.parse(data.instructions);
-        console.log(data);
-        setRecipe(data);
+        const json = await res.json();
+        let recipeData = json.recipe;
+        const instructions = JSON.parse(recipeData.instructions);
+        recipeData.instructions = instructions
+        setRecipe(recipeData);
       } catch (error) {
         console.log("fetch error ", error);
         setRecipe(null);
@@ -60,7 +60,7 @@ export default function RecipeDetail() {
       </main>
     );
   } else {
-    console.log(recipe)
+    // console.log(recipe)
     return (
       <main className="max-w-5xl mx-auto p-6 bg-gray-50 lg:rounded-xl pt-18 lg:mt-12">
         {/* Main page */}

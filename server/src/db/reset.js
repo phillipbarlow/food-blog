@@ -40,7 +40,7 @@ async function reset() {
             name TEXT NOT NULL,
             time TEXT NOT NULL,
             comment TEXT NOT NULL,
-            avatar TEXT NOT NULL,
+            avatar TEXT,
             rating INTEGER
             );
             `);
