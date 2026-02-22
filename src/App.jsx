@@ -6,6 +6,7 @@ import RecipeDetail from "./pages/RecipeDetail.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
 import PostRecipeForm from "./pages/PostRecipeForm.jsx";
+import AccountSettings from "./pages/AccountSettings.jsx";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/postRecipe" element={<PostRecipeForm />} />
+        <Route path="/accountSettings" element={<AccountSettings />} />
       </Routes>
     </div>
   );

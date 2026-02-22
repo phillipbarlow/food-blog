@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 import "../styles/recipeForm.css";
 import { useAuth } from "../hooks/userAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function AccountSettings() {
   const [userCurrent, setUserCurrent] = useState("");
   const [newUser, setNewUser] = useState({ email: "", password: "" });  
   const {logout} = useAuth();
-
+  const navigate = useNavigate();
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    const username = storedUser.username;
-console.log(storedUser)
-    if (storedUser?.username) {
-      setUserCurrent (username);
-    }
+    // const username = storedUser.username;
+// console.log(storedUser)
+    // if (storedUser?.username) {
+    //   setUserCurrent (username);
+    // }
 
 
   }, []);
@@ -25,6 +26,10 @@ console.log(storedUser)
       [name]: value,
     }));
     // console.log(newUser)
+  }
+  function handleLogout(){
+    logout()
+    navigate("/login")
   }
   
   // function handleSubmit(e){
@@ -39,7 +44,7 @@ console.log(storedUser)
       <main className=" max-w-5xl mx-auto px-4 py-20 grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* Sidebar */}
         <aside className=" md:col-span-4 recipe-form max-h-max ">
-          <button onClick={logout} className="w-full text-left px-3 py-2 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 hover:border-rose-300 transition">
+          <button onClick={handleLogout} className="w-full text-left px-3 py-2 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 hover:border-rose-300 transition">
             Log out
           </button>
         </aside>
@@ -151,7 +156,7 @@ console.log(storedUser)
 
             <button
               type="button"
-              onClick={logout}
+              onClick={handleLogout}
               className="mt-4 border border-rose-300 text-rose-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-rose-50"
             >
               Log Out
