@@ -1,5 +1,5 @@
 const API_BASE = "http://localhost:5001";
-
+const token = localStorage.getItem("token");
 async function request(endpoint, options = {}) {
   const res = await fetch(`${API_BASE}${endpoint}`, {
     method: "GET",
@@ -9,14 +9,17 @@ async function request(endpoint, options = {}) {
 
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.error || "Request failed");
+    const error = new Error(data.error || "Request failed");
+    error.status = res.status
+
+    throw error;
   }
 
   return data;
 }
 
-/* ---- AUTH ---- */
-// const token = localStorage.getItem("token");
+
+// User Auth
 
 export function signup(payload) {
   return request("/auth/signup", {
@@ -32,24 +35,33 @@ export function login(payload) {
   });
 }
 
+
 export async function getRecipes() {
   return request("/recipes");
 }
 
-export function getRecipe(id) {
-  return request(`/recipes/${id}`);
+export function getRecipe(recipeId) {
+  return request(`/recipes/${recipeId}`);
 }
 
-export function postComment(id, payload) {
-  return request(`/recipes/${id}/comments`, {
+export async function getRecipesComments(recipeId) {
+  return request(`/recipes/${recipeId}/comments`);
+}
+
+// Routes require user authentication
+
+export function postComment(recipeId, payload) {
+  return request(`/recipes/${recipeId}/comments`, {
     method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json" 
+    },
     body: JSON.stringify(payload),
   });
 }
 
 export function postRecipe(payload) {
-  const token = localStorage.getItem("token");
-console.log(token)
   return request("/recipes", {
     method: "POST",
     headers: {
@@ -60,22 +72,35 @@ console.log(token)
   });
 }
 
-export async function getRecipesComments(id) {
-  return request(`/recipes/${id}/comments`);
+
+export function deleteRecipe(recipeId) {
+  return request(`/recipes/${recipeId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json" 
+    },
+  });
 }
 
-export function deleteRecipe(id) {
-  return request(`/recipes/${id}`, { method: "DELETE" });
+export function deleteComment(recipeId,commentId) {
+  return request(`/recipes/${recipeId}/comments/${commentId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json" 
+    },
+  });
 }
 
-export function deleteComment(id) {
-  return request(`/recipes/${id}/comments`, { method: "DELETE" });
-}
-
-export function updateComment(id,commentId, payload) {
-  return request(`/recipes/${id}/comments/${commentId}`, {
+export function updateComment(recipeId,commentId, payload) {
+  return request(`/recipes/${recipeId}/comments/${commentId}`, {
     method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json" 
+    },
     body: JSON.stringify(payload),
   });
 }
-//create rest of functions
+

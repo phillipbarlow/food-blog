@@ -1,4 +1,4 @@
-import { useParams, Link, data } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import CommentSection from "../components/CommentSection";
 import { useEffect, useState } from "react";
 import { deleteRecipe } from "../api/api.js";
@@ -6,14 +6,15 @@ import { useAuth } from "../hooks/userAuth.js";
 export default function RecipeDetail() {
   const [recipe, setRecipe] = useState(null);
   const [isLoading, setLoading] = useState(true);
-  const { id } = useParams();
+  const { recipeId } = useParams();
+  console.log(useParams())
   const { isAuthenticated, user } = useAuth();
   // console.log(user)
   useEffect(() => {
     setLoading(true);
     const fetchRecipe = async () => {
       try {
-        const res = await fetch(`http://localhost:5001/recipes/${id}`);
+        const res = await fetch(`http://localhost:5001/recipes/${recipeId}`);
 
         if (!res.ok) {
           setRecipe(null);
@@ -23,7 +24,7 @@ export default function RecipeDetail() {
         let recipeData = json.recipe;
         const instructions = JSON.parse(recipeData.instructions);
         recipeData.instructions = instructions
-        setRecipe(recipeData);
+        setRecipe(json);
       } catch (error) {
         console.log("fetch error ", error);
         setRecipe(null);
@@ -32,11 +33,11 @@ export default function RecipeDetail() {
       }
     };
     fetchRecipe();
-  }, [id]);
+  }, [recipeId]);
 
   const handleDelete = async () => {
     try {
-      await deleteRecipe(id);
+      await deleteRecipe(recipeId);
       setRecipe(null);
     } catch (err) {
       console.log("Deleting error ", err);
@@ -111,7 +112,7 @@ export default function RecipeDetail() {
             </Link>
           </div>
         </div>
-        <CommentSection id={id} />
+        <CommentSection recipeId={recipeId} />
       </main>
 
       // }

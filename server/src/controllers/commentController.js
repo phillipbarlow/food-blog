@@ -1,33 +1,25 @@
 import { pool } from "../db/pool.js";
 import { getCommentsWithUsers } from "../db/comments.js";
+
 export async function postComment(req, res) {
-  const recipeId = req.params.id;
-  const { userId, displayName, comment, rating, name } = req.body;
+  const recipeId = Number(req.params.recipeId)
+
+  const { userId, comment, rating, name } = req.body;
+  // console.log(req.user)
   const time = new Date().toISOString().replace("T", " ").slice(0, 16);
   const avatar = "/user.png";
+  const missing = [];
+  if (!recipeId) missing.push("recipeId");
+  if (!name) missing.push("name");
+  if (!comment) missing.push("comment");
 
-  // if (!recipeId || !userId || !name || !comment) {
-  //   return res.status(400).json({
-  //     error: "Missing required fields",
-  //     details: { recipeId, userId, name, comment, rating },
-  //   });
-  // }
-
-  // default validation while auth is not set
-  // console.log(
-  //   userId,
-  //   displayName,
-  //   comment,
-  //   username,
-  //   "--from comment controller line 17",
-  // );
-  if (!recipeId || !comment) {
+  if (missing.length > 0) {
     return res.status(400).json({
       error: "Missing required fields",
-      details: { recipeId, userId, displayName, comment, rating },
+      received: req.body,
+      missing,
     });
   }
-
   try {
     const result = await pool.query(
       `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
@@ -38,19 +30,38 @@ export async function postComment(req, res) {
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("❌ Error inserting comment:", error);
-    res.status(500).json({ error: "Database error from comments" });
+    res.status(500).json({ error: "Database error" });
   }
 }
 
 export async function deleteComment(req, res) {
-  const { id } = req.params;
-  const commentId = Number(id);
+  const { recipeId, commentId} = req.params;
+  
+  const recipeid = Number(recipeId);
+  const commentid = Number(commentId)
 
   try {
+    if (!commentid) {
+      return res.status(400).json({
+        error: "Invalid comment id",
+        details: { commentId },
+      });
+    }
+    if (!recipeid) {
+      return res.status(400).json({
+        error: "Invalid comment id",
+        details: { recipeid },
+      });
+    }
     const result = await pool.query(
-      `DELETE FROM comments WHERE comments.id = $1 RETURNING *`,
-      [commentId],
+      `DELETE FROM comments WHERE comments.id = $1
+      AND comments.recipe_id = $2 RETURNING *`,
+      [commentid, recipeid],
     );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Comment not found" });
+    }
 
     res.status(200).json({
       message: "Comment deleted successfully",
@@ -58,20 +69,22 @@ export async function deleteComment(req, res) {
     });
   } catch (err) {
     console.log("Database error deleting comment", err);
-    res.status(500).json({ error: "Database error from comments" });
+    res.status(500).json({ error: "Database error" });
   }
 }
 
 export async function getAllComments(req, res) {
-  const { id } = req.params;
+  const { recipeId } = req.params;
 
   try {
-    // const result = await pool.query(
-    //   `SELECT * FROM comments WHERE recipe_id = $1 ORDER BY id DESC`,
-    //   [id],
-    // );
-    const result = await getCommentsWithUsers(id);
-    console.log(result,"-- FROM comment controller")
+  
+    const recipe = await pool.query("SELECT * FROM recipes WHERE id = $1 ",[recipeId]);
+
+    if(recipe.rows.length === 0){
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+    const result = await getCommentsWithUsers(recipeId);
+    // console.log(result)
     return res.status(200).json({
       comments: result,
     });
@@ -82,7 +95,7 @@ export async function getAllComments(req, res) {
 }
 
 export async function updateComment(req, res) {
-  const { id, commentId } = req.params;
+  const { recipeId, commentId } = req.params;
   const { comment, rating } = req.body;
 
   if (!comment) {
@@ -94,11 +107,11 @@ export async function updateComment(req, res) {
   try {
     const result = await pool.query(
       `UPDATE comments
-      SET comment = COALESCE($1, comment),
-      rating = COALESCE($2, rating)
-      WHERE comments.id = $3 AND recipe_id = $4
+      SET comment = COALESCE($3, comment),
+      rating = COALESCE($4, rating)
+      WHERE comments.id = $2 AND comments.recipe_id = $1
       RETURNING *;`,
-      [comment, rating || null, commentId, id],
+      [recipeId,commentId, comment, rating || null]
     );
 
     if (result.rows.length === 0) {

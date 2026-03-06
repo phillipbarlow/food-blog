@@ -8,7 +8,7 @@ import {
 } from "../api/api.js";
 import { useAuth } from "../hooks/userAuth.js";
 
-export default function CommentSection({ id }) {
+export default function CommentSection({ recipeId }) {
    const {user} = useAuth()
    const [comment, setComment] = useState("");
    const [comments, setComments] = useState([]);
@@ -21,16 +21,15 @@ export default function CommentSection({ id }) {
    useEffect(() => {
      const fetchRecipeComments = async () => {
        try {
-         const data = await getRecipesComments(id);
-        //  console.log(data,'from line 25')
+         const data = await getRecipesComments(recipeId);
+         console.log(data,'from line 25')
          setComments(data.comments);
-         console.log(data.comments,"-- from comment section line 26")
         } catch (error) {
           console.log("Error from fetching recipes own comments ", error);
         }
       };
       fetchRecipeComments();
-    }, [id,isPosting]);
+    }, [recipeId,isPosting]);
     
     const handlePost = async () => {
       if (comment.trim() === "") return;
@@ -45,7 +44,7 @@ export default function CommentSection({ id }) {
         rating: null,
       };
       try {
-        const created = await postComment(id, newComment);
+        const created = await postComment(recipeId, newComment);
         // console.log(created)
         setComments((prevComments) => [created, ...prevComments]);
         setComment("");
@@ -74,7 +73,7 @@ export default function CommentSection({ id }) {
   const handleSaveEdit = async (editId) => {
     // console.log(id, editId);
     try {
-      await updateComment(id, editId, { comment: editValue });
+      await updateComment(recipeId, editId, { comment: editValue });
       // console.log(res)
     } catch (err) {
       console.log("Error from handleUpdateComment ", err);
@@ -126,7 +125,6 @@ export default function CommentSection({ id }) {
       <div className="mt-6 space-y-6">
         {comments.length > 0 &&
           comments.map((c) => {
-            console.log(c);
             const isEditing = editingId === c.id;
             return (
               <div key={c.id} className="flex items-start gap-4">

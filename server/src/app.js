@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import recipesRouter from "./routes/recipesRouter.js";
-import commentRouter from "./routes/commentsRouter.js";
 import authRouter from "./routes/authRouter.js";
 const app = express();
 
@@ -20,7 +19,6 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use("/recipes", recipesRouter);
-app.use("/comments", commentRouter);
 app.use("/auth", authRouter);
 
 app.use((req, res) => {

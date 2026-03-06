@@ -1,29 +1,33 @@
 import { useState } from "react";
-import {login as loginApi} from "../api/api";
-import {useAuth} from "../hooks/userAuth.js"
+import { login as loginApi } from "../api/api";
+import { useAuth } from "../hooks/userAuth.js";
 import { useNavigate } from "react-router-dom";
-
-
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const {login} = useAuth()
+  const { login } = useAuth();
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const data = await loginApi({ username, password });
-      login(data)
-      navigate("/")
+      login(data);
+      navigate("/");
+      setError(false);
+      console.log(data)
     } catch (err) {
-      console.log("Error from login ", err);
+      if (!err.status || err.status >= 400) {
+        setError(err.message);
+      }
     }
   };
   return (
     // Global container
     <main className="h-[calc(100vh-100px)] flex justify-center items-center">
       <div className="bg-gray-50 p-4 max-w-md w-full rounded-2xl shadow-lg">
+        {error && <p>{error}</p>}
         <h2 className="text-3xl font-bold text-center mb-6">Log in</h2>
         <form className="space-y-5" onSubmit={handleLogin}>
           <div className="flex flex-col">

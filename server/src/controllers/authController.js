@@ -10,7 +10,7 @@ export async function signup(req, res) {
     return res.status(400).json({ error: "display_name is missing" });
   }
   if (!username) {
-    return res.status(400).json({ error: "username is missing" });
+    return res.status(400).json({ error: "username is missing backend" });
   }
   if (!password) {
     return res.status(400).json({ error: "password is missing" });
@@ -18,7 +18,6 @@ export async function signup(req, res) {
 
   try {
     const password_hash = await bcrypt.hash(password, 10);
-    // console.log(req.body)
     const result = await pool.query(
       `INSERT INTO users (display_name, username, password_hash)
        VALUES ($1, $2, $3)
@@ -33,17 +32,15 @@ export async function signup(req, res) {
     if (err.code === "23505") {
       return res.status(409).json({ error: `Username already exists!` });
     }
-    console.error("Signup error:", err);
     res.status(500).json({ error: "Signup failed" });
   }
 }
 
 export async function login(req, res) {
   try {
-    const { username, password} = req.body;
-    console.log(req.body,'line 44 auth')
+    const { username, password } = req.body;
     if (!username) {
-      return res.status(400).json({ error: "Enter username" });
+      return res.status(400).json({ error: "Enter username backend" });
     }
     if (!password) {
       return res.status(400).json({ error: "Enter password" });
@@ -52,16 +49,15 @@ export async function login(req, res) {
     const result = await pool.query(`SELECT * FROM users WHERE username = $1`, [
       username,
     ]);
-
+   
     if (result.rows.length === 0) {
-      return res.status(401).json({ error: "Invalid username!" });
+      return res.status(401).json({ error: "Invalid credentials!" });
     }
 
     const user = result.rows[0];
-console.log(user,"--from user 61")
     const match = await bcrypt.compare(password, user.password_hash);
 
-    if (!match) return res.status(401).json({ error: "Invalid password" });
+    if (!match) return res.status(401).json({ error: "Invalid credentials!" });
 
     const token = jwt.sign(
       { id: user.id, username: user.username },
@@ -75,7 +71,6 @@ console.log(user,"--from user 61")
         id: user.id,
         displayName: user.display_name,
         username,
-        
       },
       token,
     });
@@ -88,10 +83,9 @@ console.log(user,"--from user 61")
 export async function updateUserSettings(req, res) {
   try {
     const { password, newPassword, newUsername, display_name } = req.body;
+
     const userId = req.user.id;
-
-    console.log(userId, "-- from auth controller");
-
+    
     const userResult = await pool.query(`SELECT * FROM users WHERE id = $1`, [
       userId,
     ]);
@@ -112,7 +106,12 @@ export async function updateUserSettings(req, res) {
        password_hash = COALESCE($3, password_hash)
    WHERE id = $4
    RETURNING id, username;`,
-      [display_name || null, newUsername || null, hashedPassword || null, userId],
+      [
+        display_name || null,
+        newUsername || null,
+        hashedPassword || null,
+        userId,
+      ],
     );
 
     if (result.rows.length === 0) {
@@ -120,7 +119,7 @@ export async function updateUserSettings(req, res) {
     }
 
     res.status(200).json({
-      message: "Update successful"
+      message: "Update successful",
     });
   } catch (error) {
     res.status(500).json({ error: "Database Error from users patch" });

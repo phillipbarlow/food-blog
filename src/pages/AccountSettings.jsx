@@ -10,13 +10,7 @@ export default function AccountSettings() {
   const navigate = useNavigate();
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
-    // const username = storedUser.username;
 // console.log(storedUser)
-    // if (storedUser?.username) {
-    //   setUserCurrent (username);
-    // }
-
-
   }, []);
   
   function handleChange(e) {
