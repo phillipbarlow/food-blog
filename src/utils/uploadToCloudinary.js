@@ -12,6 +12,7 @@ const url = `https://api.cloudinary.com/v1_1/dup1ah30v/image/upload`;
       method: "POST",
       body: formData,
     });
+    console.log(import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));

@@ -62,13 +62,14 @@ export default function RecipeDetail() {
     );
   } else {
     // console.log(recipe)
+    console.log(recipe)
     return (
       <main className="max-w-5xl mx-auto p-6 bg-gray-50 lg:rounded-xl pt-18 lg:mt-12">
         {/* Main page */}
         <div className="grid md:grid-cols-2 sm:gap-0 xl:gap-8 items-start">
           {/* <div className="space-y-4"> */}
             <img
-              src={recipe.image}
+              src={recipe.recipe.image}
               alt={recipe.title}
               className="w-full rounded-xl  object-cover"
             />
