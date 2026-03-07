@@ -22,6 +22,7 @@ async function reset() {
     await pool.query(`
       CREATE TABLE recipes (
         id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
         title TEXT NOT NULL,
         ingredients TEXT NOT NULL,
         instructions TEXT NOT NULL,
@@ -45,18 +46,18 @@ async function reset() {
             );
             `);
 
-            const userIds = [];
-            
-            for (let i = 1; i <= 50; i++) {
-              const result = await pool.query(
-                `INSERT INTO users (display_name, username, password_hash)
+    const userIds = [];
+
+    for (let i = 1; i <= 50; i++) {
+      const result = await pool.query(
+        `INSERT INTO users (display_name, username, password_hash)
                 VALUES ($1, $2, $3)
                 RETURNING *;`,
-                [`User ${i}`,`user${i}@test.com`, "fake_hash" ],
-              );
-              userIds.push(result.rows[0].id);
-            }
-            
+        [`User ${i}`, `user${i}@test.com`, "fake_hash"],
+      );
+      userIds.push(result.rows[0].id);
+    }
+
     // Recipe seed data
     for (let i = 1; i <= 50; i++) {
       const ingredientsArr = [
@@ -71,38 +72,38 @@ async function reset() {
       ];
       const ingredientsString = JSON.stringify(ingredientsArr);
       const instructionsString = JSON.stringify(instructionsArr);
-      const username = "Nelly"
+      const username = "Nelly";
+      const userId = i ;
       const image = "/default-items-image.png";
       await pool.query(
-        `INSERT INTO recipes (title, ingredients, instructions, category, image, created_by)
-         VALUES ($1, $2, $3, $4, $5, $6);`,
+        `INSERT INTO recipes (user_id,title, ingredients, instructions, category, image, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6,$7);`,
         [
+          userId,
           `title ${i}`,
           ingredientsString,
           instructionsString,
           i % 2 === 0 ? "cooking" : "baking",
           image,
-          username
+          username,
         ],
       );
     }
 
-    // 🔽 updated comment seeding
-
     for (let i = 1; i <= 50; i++) {
-      const recipeId = ((i - 1) % 10) + 1; // spread comments over first 10 recipes
+      const recipeId = ((i - 1) % 10) + 1;
       const userId = userIds[(i - 1) % userIds.length];
 
       const name = `User ${i}`;
       const time = new Date().toISOString().replace("T", " ").slice(0, 16);
       const comment = `Comment ${i} — this is a seeded comment for recipe ${recipeId}.`;
       const avatar = "/user.png";
-      const rating = ((i - 1) % 5) + 1; // 1–5
+      const rating = ((i - 1) % 5) + 1;
 
       await pool.query(
         `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
          VALUES ($1, $2, $3, $4, $5, $6, $7);`,
-        [recipeId, userId, name, time, comment, avatar, rating ],
+        [recipeId, userId, name, time, comment, avatar, rating],
       );
     }
 

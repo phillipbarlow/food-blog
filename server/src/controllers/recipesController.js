@@ -1,9 +1,8 @@
 import { pool } from "../db/pool.js";
-import jwt from "jsonwebtoken";
 import cloudinary from "../../config/cloudinary.js";
 
 export async function getAllRecipes(req, res) {
-  const { category} = req.query;
+  const { category } = req.query;
   try {
     let result;
     if (category === "baking" || category === "cooking") {
@@ -51,13 +50,11 @@ export async function getSingleRecipe(req, res) {
 }
 
 export async function postRecipe(req, res) {
-  const { title, ingredients, instructions, category, image, image_id } = req.body;
+  const { title, ingredients, instructions, category, image, image_id } =
+    req.body;
   const ingredientsString = JSON.stringify(ingredients);
   const instructionsString = JSON.stringify(instructions);
-  // const image = "/default-items-image.png";
-  const token = req.headers.authorization?.split(" ")[1];
-  // const username = decoded.username; 
-  
+
   if (!title) {
     return res.status(400).json({ error: "Title is missing" });
   }
@@ -70,22 +67,23 @@ export async function postRecipe(req, res) {
   if (!category) {
     return res.status(400).json({ error: "Category is missing" });
   }
-  
+
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded)
+    console.log(req.user.displayname);
+   const userId = req.user.id;
     const result = await pool.query(
-      `INSERT INTO recipes (title,ingredients ,instructions ,category, image, created_by, image_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO recipes (user_id, title,ingredients ,instructions ,category, image, created_by, image_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7,$8)
        RETURNING *`,
       [
+        userId,
         title,
         ingredientsString,
         instructionsString,
         category,
         image || null,
-        decoded.username || null,
-        image_id || null
+        req.user.displayname,
+        image_id || null,
       ],
     );
 
@@ -100,18 +98,21 @@ export async function postRecipe(req, res) {
 
 export async function deleteRecipe(req, res) {
   const { recipeId } = req.params;
+  const userId = req.user.id
   try {
     const result = await pool.query(
-      `DELETE FROM recipes WHERE id = $1 RETURNING *`,
+      `DELETE FROM recipes WHERE id = $1 
+      AND WHERE 
+      RETURNING *`,
       [recipeId],
     );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "No recipe found" });
     }
-    const {image_id} = result.rows[0]
+    const { image_id } = result.rows[0];
 
-     if (image_id) {
+    if (image_id) {
       await cloudinary.uploader.destroy(image_id);
     }
 
@@ -119,7 +120,6 @@ export async function deleteRecipe(req, res) {
       message: "recipe and comments deleted successfully",
       recipe: result.rows[0],
     });
-    
   } catch (error) {
     console.log("Error deleting Recipe", error);
     res

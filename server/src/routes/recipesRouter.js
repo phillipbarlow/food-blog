@@ -16,14 +16,14 @@ const router = Router();
 
 // recipes/
 router.get("/", getAllRecipes);
-router.post("/", postRecipe);
+router.post("/",requireAuth, postRecipe);
 router.get("/:recipeId", getSingleRecipe);
-router.delete("/:recipeId", deleteRecipe);
+router.delete("/:recipeId",requireAuth, deleteRecipe);
 
 // comments for a recipe
 router.get("/:recipeId/comments", getAllComments);
-router.post("/:recipeId/comments",postComment)
-router.patch("/:recipeId/comments/:commentId", updateComment);
-router.delete("/:recipeId/comments/:commentId", deleteComment);
+router.post("/:recipeId/comments",requireAuth,postComment)
+router.patch("/:recipeId/comments/:commentId",requireAuth, updateComment);
+router.delete("/:recipeId/comments/:commentId",requireAuth, deleteComment);
 
 export default router;
