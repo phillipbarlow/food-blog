@@ -21,20 +21,19 @@ async function request(endpoint, options = {}) {
 
 // User Auth
 
-export function signup(payload) {
+export function signupUserApi(payload) {
   return request("/auth/signup", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 }
 
-export function login(payload) {
+export function loginUserApi(payload) {
   return request("/auth/login", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 }
-
 
 export async function getRecipes() {
   return request("/recipes");

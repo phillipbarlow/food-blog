@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function AccountSettings() {
   const [userCurrent, setUserCurrent] = useState("");
   const [newUser, setNewUser] = useState({ email: "", password: "" });  
-  const {logout} = useAuth();
+  const {logoutAuth} = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -22,7 +22,7 @@ export default function AccountSettings() {
     // console.log(newUser)
   }
   function handleLogout(){
-    logout()
+    logoutAuth()
     navigate("/login")
   }
   

@@ -21,15 +21,16 @@ export function AuthProvider({ children }) {
     setLoading(false)
   },[])
 
-  function login(userData) {
+  function loginAuth(userData) {
     const { user, token } = userData;
     setUser(user);
     setToken(token);
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("token", token);
+    return user;
   }
 
-  function logout() {
+  function logoutAuth() {
     setUser(null);
     setToken(null)
     localStorage.removeItem("user");
@@ -41,8 +42,8 @@ export function AuthProvider({ children }) {
     token,
     loading,
     isAuthenticated: !!user,
-    login,
-    logout,
+    loginAuth,
+    logoutAuth,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

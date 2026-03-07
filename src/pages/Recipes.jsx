@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import {getRecipes} from "../api/api.js"
 export default function Recipes() {
-  const [recipes, setRecipes] = useState([]);
+  const [apiResponse, setApiResponse] = useState([]);
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const allRecipes = getRecipes();
-        setRecipes(allRecipes);
-        // console.log(allRecipes)
+        const response = await getRecipes();
+        setApiResponse(response);
+        console.log(response,'-response')
       } catch (error) {
         console.error("Fetch error:", error);
       }
@@ -16,14 +16,15 @@ export default function Recipes() {
     fetchRecipes();
   }, []);
   
+  console.log(apiResponse)
   return (
     <main className="max-w-5xl mx-auto p-6 text-center mt-30">
       <h1 className="text-3xl font-bold mb-6">Recipes</h1>
-      {recipes.length === 0 ? (
+      {apiResponse.length === 0 ? (
         <p>No recipes yet.</p>
       ) : (
         <ul className="md:grid-cols-2 gap-6">
-          {recipes.map((r) => (
+          {apiResponse.recipes.map((r) => (
               // console.log(r)
             <li key={r.id} className="border rounded-lg p-4 bg-white shadow-sm">
               <h2 className="text-xl font-semibold">{r.title}</h2>

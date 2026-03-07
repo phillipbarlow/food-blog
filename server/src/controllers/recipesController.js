@@ -69,7 +69,6 @@ export async function postRecipe(req, res) {
   }
 
   try {
-    console.log(req.user.displayname);
    const userId = req.user.id;
     const result = await pool.query(
       `INSERT INTO recipes (user_id, title,ingredients ,instructions ,category, image, created_by, image_id)
@@ -102,9 +101,9 @@ export async function deleteRecipe(req, res) {
   try {
     const result = await pool.query(
       `DELETE FROM recipes WHERE id = $1 
-      AND WHERE 
+      AND user_id = $2
       RETURNING *`,
-      [recipeId],
+      [recipeId,userId],
     );
 
     if (result.rows.length === 0) {
@@ -115,7 +114,7 @@ export async function deleteRecipe(req, res) {
     if (image_id) {
       await cloudinary.uploader.destroy(image_id);
     }
-
+    
     return res.status(200).json({
       message: "recipe and comments deleted successfully",
       recipe: result.rows[0],

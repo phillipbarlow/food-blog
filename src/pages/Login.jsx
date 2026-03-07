@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { login as loginApi } from "../api/api";
+import { loginUserApi } from "../api/api";
 import { useAuth } from "../hooks/userAuth.js";
 import { useNavigate } from "react-router-dom";
 
@@ -8,15 +8,16 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { loginAuth } = useAuth();
+  console.log(useAuth())
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const data = await loginApi({ username, password });
-      login(data);
+      const data = await loginUserApi({ username, password });
+      loginAuth(data);
       navigate("/");
       setError(false);
-      console.log(data)
+      console.log(loginAuth(data),"--from Login.jsx")
     } catch (err) {
       if (!err.status || err.status >= 400) {
         setError(err.message);
@@ -58,7 +59,7 @@ export default function Login() {
           <button
             type="submit"
             className="w-full bg-[#CC6330] text-white py-2 rounded-lg font-medium hover:bg-[#CC6330]/80 transition"
-            onClick={(e) => handleLogin(e)}
+            onClick={handleLogin}
           >
             Login
           </button>
