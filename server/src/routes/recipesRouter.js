@@ -12,10 +12,12 @@ import {
   deleteComment,
   updateComment
 } from "../controllers/commentController.js";
+import {getRecipeCardInfo} from "../db/userInfo.js"
 const router = Router();
 
 // recipes/
-router.get("/", getAllRecipes);
+// router.get("/", getAllRecipes);
+router.get("/", getRecipeCardInfo);
 router.post("/",requireAuth, postRecipe);
 router.get("/:recipeId", getSingleRecipe);
 router.delete("/:recipeId",requireAuth, deleteRecipe);

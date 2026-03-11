@@ -4,16 +4,29 @@ import RecipeCard from "./RecipeCard";
 import { getRecipes } from "../api/api";
 export default function FeaturedRecipes() {
   const [recipes, setRecipes] = useState([]);
+  // useEffect(() => {
+  //   const fetchRecipes = async () => {
+  //     try {
+  //       const data = await getRecipes();
+  //       const parsed = data.recipes.map((recipe) => ({
+  //         ...recipe,
+  //         ingredients: JSON.parse(recipe.ingredients),
+  //         instructions: JSON.parse(recipe.instructions)
+  //       }));
+  //       setRecipes(parsed);
+  //     } catch (err) {
+  //       console.log("Error from FeaturedRecipes ", err);
+  //     }
+  //   };
+  //   fetchRecipes();
+  // }, []);
+
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
         const data = await getRecipes();
-        const parsed = data.recipes.map((recipe) => ({
-          ...recipe,
-          ingredients: JSON.parse(recipe.ingredients),
-          instructions: JSON.parse(recipe.instructions)
-        }));
-        setRecipes(parsed);
+        console.log(data)
+        setRecipes(data);
       } catch (err) {
         console.log("Error from FeaturedRecipes ", err);
       }
@@ -28,7 +41,7 @@ export default function FeaturedRecipes() {
           Featured recipes
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:grid-cols-3 ">
-          {recipes.slice(0, 10).map((r) => (
+          {/* {recipes.slice(0, 10).map((r) => (
             <div key={r.id} className="overflow-hidden rounded-xl shadow-md">
               <RecipeCard
                 key={r.id}
@@ -36,11 +49,9 @@ export default function FeaturedRecipes() {
                 title={r.title}
                 image={r.image}
                 description={r.description}
-                // prepTime={r.prepTime}
-                // servings={r.servings}
               />
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
     </section>

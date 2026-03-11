@@ -8,6 +8,5 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.patch("/users/me", requireAuth, updateUserSettings);
 
-// create patch
 
 export default router;

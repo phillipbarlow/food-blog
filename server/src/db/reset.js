@@ -29,7 +29,8 @@ async function reset() {
         category TEXT NOT NULL,
         image TEXT,
         created_by TEXT NOT NULL,
-        image_id TEXT
+        image_id TEXT,
+        likes INTEGER NOT NULL DEFAULT 0
         );
         `);
 
@@ -42,7 +43,8 @@ async function reset() {
             time TEXT NOT NULL,
             comment TEXT NOT NULL,
             avatar TEXT,
-            rating INTEGER
+            rating INTEGER,
+            likes INTEGER NOT NULL DEFAULT 0
             );
             `);
 
@@ -73,7 +75,7 @@ async function reset() {
       const ingredientsString = JSON.stringify(ingredientsArr);
       const instructionsString = JSON.stringify(instructionsArr);
       const username = "Nelly";
-      const userId = i ;
+      const userId = i;
       const image = "/default-items-image.png";
       await pool.query(
         `INSERT INTO recipes (user_id,title, ingredients, instructions, category, image, created_by)
@@ -85,7 +87,7 @@ async function reset() {
           instructionsString,
           i % 2 === 0 ? "cooking" : "baking",
           image,
-          username,
+          username
         ],
       );
     }

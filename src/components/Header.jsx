@@ -119,7 +119,7 @@ export default function Nav() {
               to={isAuthenticated ? "#" : "/login"}
             >
               {isAuthenticated ? 
-              <Link to="/accountSettings"><button >{`${user?.username || "user"}`}</button></Link>: 
+              <Link to="/auth/users/me"><button >{`${user?.username || "user"}`}</button></Link>: 
               <Link className="cursor-pointer bg-[#CC6330] px-6 py-3 text-white rounded-md shadow-2xl hover:bg-[#CC6330]/80 transition" to="/login" onClick={handleLogout}>Login!</Link>}
           </div>
         </nav>

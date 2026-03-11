@@ -10,6 +10,7 @@ import { useAuth } from "../hooks/userAuth.js";
 
 export default function CommentSection({ recipeId }) {
    const {user} = useAuth()
+   console.log(user)
    const [comment, setComment] = useState("");
    const [comments, setComments] = useState([]);
    const [isPosting, setIsPosting] = useState(false);
@@ -86,7 +87,6 @@ export default function CommentSection({ recipeId }) {
   };
 
   const startEditing = (data) => {
-    // console.log(data, "--from 75");
     setEditingId(data.id);
     setEditValue(data.comment);
   };
@@ -125,6 +125,7 @@ export default function CommentSection({ recipeId }) {
       <div className="mt-6 space-y-6">
         {comments.length > 0 &&
           comments.map((c) => {
+            console.log(c)
             const isEditing = editingId === c.id;
             return (
               <div key={c.id} className="flex items-start gap-4">
@@ -137,14 +138,14 @@ export default function CommentSection({ recipeId }) {
                   <div className="flex items-center gap-3">
                     <p className="font-semibold text-slate-900">{c.display_name}</p>
                     <span className="text-sm text-slate-500">{c.time}</span>
-                    <button
+                    {user.id === c.user_id && (<button
                       type="button"
                       onClick={() => handleDeleteComment(c.id)}
                       className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
                       aria-label={`Delete comment from ${c.name}`}
                     >
                       Delete comment
-                    </button>
+                    </button>)}
                   </div>
 
                   {isEditing ? (
@@ -174,13 +175,13 @@ export default function CommentSection({ recipeId }) {
                       <p className="text-slate-700 text-sm leading-relaxed">
                         {c.comment}
                       </p>
-                      <button
+                      {user.id === c.user_id && (<button
                         className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
                         // onClick={() => setEditComment(c.id)}
                         onClick={() => startEditing(c)}
                       >
                         Edit
-                      </button>
+                      </button>)}
                     </>
                   )}
                 </div>

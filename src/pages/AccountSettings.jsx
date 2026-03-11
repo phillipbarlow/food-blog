@@ -2,43 +2,94 @@ import { useEffect, useState } from "react";
 import "../styles/recipeForm.css";
 import { useAuth } from "../hooks/userAuth";
 import { useNavigate } from "react-router-dom";
+import { updateUserApi } from "../api/api.js";
 
 export default function AccountSettings() {
-  const [userCurrent, setUserCurrent] = useState("");
-  const [newUser, setNewUser] = useState({ email: "", password: "" });  
-  const {logoutAuth} = useAuth();
+  const [userCurrent, setUserCurrent] = useState({
+    username: "",
+    password: "",
+  });
+  const [newUser, setNewUser] = useState({
+    newUsername: "",
+    newPassword: "",
+    confirmedPassword: "",
+  });
+  const { logoutAuth } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-// console.log(storedUser)
+    setUserCurrent(JSON.parse(localStorage.getItem("user")));
   }, []);
-  
-  function handleChange(e) {
+
+  function handleInputChange(e) {
     const { name, value } = e.target;
     setNewUser((curr) => ({
       ...curr,
       [name]: value,
     }));
-    // console.log(newUser)
   }
-  function handleLogout(){
-    logoutAuth()
-    navigate("/login")
-  }
-  
-  // function handleSubmit(e){
-  //    e.preventDefault();
 
-
+  //  function handlePasswordChange(e) {
+  //   const { name, value } = e.target;
+  //   setNewUser((curr) => ({
+  //     ...curr,
+  //     [name]: value,
+  //   }));
   // }
 
+  function handleLogout() {
+    logoutAuth();
+    navigate("/login");
+  }
+
+  async function handleUsernameSubmit(e) {
+    e.preventDefault();
+    const payload = {
+      newUsername: newUser.newUsername,
+      password: newUser.password,
+    };
+    const data = await updateUserApi(payload);
+
+    setUserCurrent((curr) => ({
+      ...curr,
+      username: data.user.username,
+    }));
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        ...JSON.parse(localStorage.getItem("user")),
+        username: data.user.username,
+      }),
+    );
+  }
+
+  async function handlePasswordSubmit(e) {
+    e.preventDefault();
+    const payload = {
+      password: newUser.password,
+      newPassword: newUser.newPassword,
+      confirmPassword: newUser.confirmedPassword,
+    };
+    await updateUserApi(payload);
+    
+    setNewUser((curr) => ({
+      ...curr,
+      password: "",
+      newPassword: "",
+      confirmedPassword: "",
+    }));
+  }
+  
+  console.log(newUser)
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Layout */}
       <main className=" max-w-5xl mx-auto px-4 py-20 grid grid-cols-1 md:grid-cols-12 gap-6">
         {/* Sidebar */}
         <aside className=" md:col-span-4 recipe-form max-h-max ">
-          <button onClick={handleLogout} className="w-full text-left px-3 py-2 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 hover:border-rose-300 transition">
+          <button
+            onClick={handleLogout}
+            className="w-full text-left px-3 py-2 rounded-xl border border-rose-200 text-rose-700 hover:bg-rose-50 hover:border-rose-300 transition"
+          >
             Log out
           </button>
         </aside>
@@ -59,37 +110,37 @@ export default function AccountSettings() {
                 Signed in as
               </p>
               <p className="mt-1 font-medium text-slate-900">
-                {userCurrent || "johnDoe@email.com"}
+                {userCurrent?.username || ""}
               </p>
             </div>
           </div>
 
-          {/* Change Email */}
+          {/* Change Username */}
           <div className="mt-6 bg-white rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-semibold">Change Email</h2>
+            <h2 className="text-lg font-semibold">Change username</h2>
             <p className="text-sm text-slate-600 mt-1">
               Confirm with your password.
             </p>
 
-            <form className="mt-5 space-y-4">
+            <form className="mt-5 space-y-4" onSubmit={handleUsernameSubmit}>
               <div>
-                <label className="field-label">Current email</label>
+                <label className="field-label">Current username</label>
                 <input
-                  type="email"
-                  value="phil@email.com"
+                  type="text"
+                  value={userCurrent?.username || ""}
                   disabled
                   className="text-input"
                 />
               </div>
 
               <div>
-                <label className="field-label">New email</label>
+                <label className="field-label">New username</label>
                 <input
-                  type="email"
-                  placeholder="new@email.com"
+                  name="newUsername"
+                  type="text"
+                  placeholder="new username"
                   className="text-input"
-                  onChange={handleChange}
-                  name="email"
+                  onChange={handleInputChange}
                 />
               </div>
 
@@ -99,13 +150,13 @@ export default function AccountSettings() {
                   type="password"
                   placeholder="••••••••"
                   className="text-input"
-                  onChange={handleChange}
+                  onChange={handleInputChange}
                   name="password"
                 />
               </div>
 
               <div className="flex justify-end">
-                <button type="button" className="primary-button">
+                <button type="submit" className="primary-button">
                   Save Email
                 </button>
               </div>
@@ -117,24 +168,39 @@ export default function AccountSettings() {
             <h2 className="text-lg font-semibold">Change Password</h2>
             <p className="text-sm text-slate-600 mt-1">Minimum 8 characters.</p>
 
-            <form className="mt-5 space-y-4">
+            <form className="mt-5 space-y-4" onSubmit={handlePasswordSubmit}>
               <div>
                 <label className="field-label">Current password</label>
-                <input type="password" className="text-input" />
+                <input
+                  type="password"
+                  className="text-input"
+                  name="password"
+                  onChange={handleInputChange}
+                />
               </div>
 
               <div>
                 <label className="field-label">New password</label>
-                <input type="password" className="text-input" />
+                <input
+                  name="newPassword"
+                  type="password"
+                  className="text-input"
+                  onChange={handleInputChange}
+                />
               </div>
 
               <div>
                 <label className="field-label">Confirm new password</label>
-                <input type="password" className="text-input" />
+                <input
+                  name="confirmedPassword"
+                  type="password"
+                  className="text-input"
+                  onChange={handleInputChange}
+                />
               </div>
 
               <div className="flex justify-end">
-                <button type="button" className="primary-button">
+                <button type="submit" className="primary-button">
                   Update Password
                 </button>
               </div>

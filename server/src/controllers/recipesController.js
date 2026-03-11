@@ -67,7 +67,7 @@ export async function postRecipe(req, res) {
   if (!category) {
     return res.status(400).json({ error: "Category is missing" });
   }
-
+// console.log(req.user.id)
   try {
     const result = await pool.query(
       `INSERT INTO recipes (user_id, title,ingredients ,instructions ,category, image, created_by, image_id)
@@ -81,7 +81,7 @@ export async function postRecipe(req, res) {
         category,
         image || null,
         req.user.displayname,
-        image_id || null,
+        image_id || null
       ],
     );
 

@@ -17,7 +17,6 @@ export default function Login() {
       loginAuth(data);
       navigate("/");
       setError(false);
-      console.log(loginAuth(data),"--from Login.jsx")
     } catch (err) {
       if (!err.status || err.status >= 400) {
         setError(err.message);

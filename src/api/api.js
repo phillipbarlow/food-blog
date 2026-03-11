@@ -10,14 +10,13 @@ async function request(endpoint, options = {}) {
   const data = await res.json();
   if (!res.ok) {
     const error = new Error(data.error || "Request failed");
-    error.status = res.status
+    error.status = res.status;
 
     throw error;
   }
 
   return data;
 }
-
 
 // User Auth
 
@@ -31,6 +30,17 @@ export function signupUserApi(payload) {
 export function loginUserApi(payload) {
   return request("/auth/login", {
     method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function updateUserApi(payload) {
+  return request("/auth/users/me", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(payload),
   });
 }
@@ -54,7 +64,7 @@ export function postComment(recipeId, payload) {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json" 
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
@@ -65,41 +75,39 @@ export function postRecipe(payload) {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json" 
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
 }
-
 
 export function deleteRecipe(recipeId) {
   return request(`/recipes/${recipeId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json" 
+      "Content-Type": "application/json",
     },
   });
 }
 
-export function deleteComment(recipeId,commentId) {
+export function deleteComment(recipeId, commentId) {
   return request(`/recipes/${recipeId}/comments/${commentId}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json" 
+      "Content-Type": "application/json",
     },
   });
 }
 
-export function updateComment(recipeId,commentId, payload) {
+export function updateComment(recipeId, commentId, payload) {
   return request(`/recipes/${recipeId}/comments/${commentId}`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json" 
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
 }
-

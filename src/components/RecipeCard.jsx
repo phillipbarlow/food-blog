@@ -12,19 +12,6 @@ export default function RecipeCard({
   servings,
   alt,
 }) {
-  const [comments, setComments] = useState([])
-  useEffect(()=>{
-    const fetchCommentsData = async () =>{
-      try{
-        const recipeComments = await getRecipesComments(id)
-          setComments(recipeComments)
-          // console.log(comments)
-      }catch(err){
-        console.log('Error from RecipeCard fetching comments ', err)
-      }
-    }
-    fetchCommentsData()
-  },[])
 
   return (
     <div className="group overflow-hidden rounded-xl shadow-md bg-white transition hover:-translate-y-1 hover:shadow-lg">
@@ -77,7 +64,7 @@ export default function RecipeCard({
                 />
             </svg>
             
-            <span>{comments.length}</span>
+            <span>14</span>
           </button>
           {/* likes */}
           <button className="flex items-center gap-2 hover:text-emerald-600">

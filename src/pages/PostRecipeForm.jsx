@@ -4,6 +4,7 @@ import { postRecipe } from "../api/api.js";
 import { useNavigate } from "react-router-dom";
 import { uploadImageToCloudinary } from "../utils/uploadToCloudinary.js";
 import { shrink } from "../utils/shrink.js";
+import { useAuth } from "../hooks/userAuth.js";
 export default function PostRecipeForm() {
   const [ingredients, setIngredients] = useState([""]);
   const [steps, setSteps] = useState([""]);
@@ -13,30 +14,30 @@ export default function PostRecipeForm() {
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const {user} = useAuth();
   const navigate = useNavigate();
-
+  
   async function handleImageUpload(e) {
     const file = e.target.files[0];
     if(!file) return;
-
+    
     const smallFile = await shrink(file)
     const url = await uploadImageToCloudinary(smallFile);
     setImageFile(url);
-
+    
     console.log("Uploaded image URL:", url);
   }
-
+  
   function handleIngredientChange(value, index) {
     const updated = [...ingredients];
     updated[index] = value;
     setIngredients(updated);
   }
-
+  
   function addIngredient() {
     setIngredients((curr) => [...curr, ""]);
   }
-
+  
   function removeIngredient(index) {
     setIngredients((curr) => curr.filter((_, i) => i !== index));
   }
@@ -45,11 +46,11 @@ export default function PostRecipeForm() {
     updated[index] = value;
     setSteps(updated);
   }
-
+  
   function addStep() {
     setSteps((curr) => [...curr, ""]);
   }
-
+  
   function removeStep(index) {
     setSteps((curr) => curr.filter((_, i) => i !== index));
   }
@@ -66,34 +67,31 @@ export default function PostRecipeForm() {
       console.log("Error from handlePost", err);
     }
   };
-
+  
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-
     try {
       let imageUrl = null;
-
       if (imageFile) {
         imageUrl = await uploadImageToCloudinary(imageFile);
       }
       const trimmerTitle = title.trim();
       const trimmedIngredients = ingredients
-        .map((i) => i.trim())
-        .filter((item) => item !== "");
+      .map((i) => i.trim())
+      .filter((item) => item !== "");
       const trimmedInstructions = steps
-        .map((i) => i.trim())
-        .filter((item) => item !== "");
-
+      .map((i) => i.trim())
+      .filter((item) => item !== "");
+      
       const payLoad = {
         title: trimmerTitle,
         ingredients: trimmedIngredients,
         instructions: trimmedInstructions,
         category,
-        image: imageUrl || null,
+        image: imageUrl || null
       };
-
-      handlePost(payLoad);
+      await handlePost(payLoad);
     } catch (err) {
       console.log("Error submitting recipe:", err);
       setError(err);

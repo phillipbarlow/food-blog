@@ -7,9 +7,9 @@ export default function RecipeDetail() {
   const [recipe, setRecipe] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const { recipeId } = useParams();
-  console.log(useParams())
+  // console.log(useParams())
   const { isAuthenticated, user } = useAuth();
-  // console.log(user)
+
   useEffect(() => {
     setLoading(true);
     const fetchRecipe = async () => {
@@ -73,7 +73,7 @@ export default function RecipeDetail() {
               alt={recipe.title}
               className="w-full rounded-xl  object-cover"
             />
-            {isAuthenticated && user?.username === recipe.created_by && (
+            {isAuthenticated && user.id === recipe.recipe.user_id && (
               <button
                 onClick={handleDelete}
                 className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400"
@@ -81,7 +81,6 @@ export default function RecipeDetail() {
                 Delete recipes
               </button>
             )}
-          {/* </div> */}
 
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">

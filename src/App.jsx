@@ -19,7 +19,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/postRecipe" element={<PostRecipeForm />} />
-        <Route path="/accountSettings" element={<AccountSettings />} />
+        <Route path="/auth/users/me" element={<AccountSettings />} />
       </Routes>
     </div>
   );

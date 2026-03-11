@@ -49,7 +49,7 @@ export async function login(req, res) {
     const result = await pool.query(`SELECT * FROM users WHERE username = $1`, [
       username,
     ]);
-   
+
     // console.log(result.rows[0],"--from auth")
     if (result.rows.length === 0) {
       return res.status(401).json({ error: "Invalid credentials!" });
@@ -83,23 +83,40 @@ export async function login(req, res) {
 
 export async function updateUserSettings(req, res) {
   try {
-    const { password, newPassword, newUsername, display_name } = req.body;
+    const {
+      password,
+      newPassword,
+      confirmPassword,
+      newUsername,
+      display_name,
+    } = req.body;
 
     const userId = req.user.id;
-    
+    if (newPassword && newPassword !== confirmPassword) {
+      return res.status(400).json({
+        error: "New password and confirm password must match",
+      });
+    }
+
     const userResult = await pool.query(`SELECT * FROM users WHERE id = $1`, [
       userId,
     ]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "user not found" });
+    }
+
     const user = userResult.rows[0];
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid password" });
     }
-    let hashedPassword;
+
+    let hashedPassword = null;
     if (newPassword) {
       hashedPassword = await bcrypt.hash(newPassword, 10);
     }
+
     const result = await pool.query(
       `UPDATE users
    SET display_name = COALESCE($1, display_name),
@@ -115,15 +132,12 @@ export async function updateUserSettings(req, res) {
       ],
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "user not found" });
-    }
-
     res.status(200).json({
       message: "Update successful",
+      user: result.rows[0],
     });
   } catch (error) {
     res.status(500).json({ error: "Database Error from users patch" });
-    console.log(error);
+    console.log(error, "-- line 141");
   }
 }
