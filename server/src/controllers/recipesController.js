@@ -1,6 +1,62 @@
 import { pool } from "../db/pool.js";
 import cloudinary from "../../config/cloudinary.js";
 
+export async function getRecipeCardInfo(req, res) {
+  const { category } = req.query;
+  console.log(category);
+  console.log(req.query);
+  try {
+    let result;
+    if (category === "baking" || category === "cooking") {
+      console.log(category);
+      result = await pool.query(
+        `SELECT
+        r.id,
+        r.title,
+        r.image,
+        r.likes,
+        r.category,
+        COUNT(c.id)::int AS comment_count
+        FROM recipes r
+        LEFT JOIN comments c ON c.recipe_id = r.id
+        WHERE category = $1
+        GROUP BY r.id, r.title, r.image, r.likes
+        ORDER BY r.id DESC;`,
+        [category],
+      );
+    } else {
+      result = await pool.query(
+        `SELECT
+        r.id,
+        r.title,
+        r.image,
+        r.likes,
+        r.category,
+        COUNT(c.id)::int AS comment_count
+        FROM recipes r
+        LEFT JOIN comments c ON c.recipe_id = r.id
+        GROUP BY r.id, r.title, r.image, r.likes
+        ORDER BY r.id DESC;`,
+      );
+    }
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No recipes found" });
+    }
+    
+    // console.log(result.rows);
+    res.json({
+      message: "Recipes recieved successfully",
+      recipes: result.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching recipes:", error);
+    res
+      .status(500)
+      .json({ error: `Database error from getAllRecipes ${error}` });
+  }
+}
+
 export async function getAllRecipes(req, res) {
   const { category } = req.query;
   try {
@@ -67,7 +123,7 @@ export async function postRecipe(req, res) {
   if (!category) {
     return res.status(400).json({ error: "Category is missing" });
   }
-// console.log(req.user.id)
+  // console.log(req.user.id)
   try {
     const result = await pool.query(
       `INSERT INTO recipes (user_id, title,ingredients ,instructions ,category, image, created_by, image_id)
@@ -81,7 +137,7 @@ export async function postRecipe(req, res) {
         category,
         image || null,
         req.user.displayname,
-        image_id || null
+        image_id || null,
       ],
     );
 
@@ -96,13 +152,13 @@ export async function postRecipe(req, res) {
 
 export async function deleteRecipe(req, res) {
   const { recipeId } = req.params;
-  const userId = req.user.id
+  const userId = req.user.id;
   try {
     const result = await pool.query(
       `DELETE FROM recipes WHERE id = $1 
       AND user_id = $2
       RETURNING *`,
-      [recipeId,userId],
+      [recipeId, userId],
     );
 
     if (result.rows.length === 0) {

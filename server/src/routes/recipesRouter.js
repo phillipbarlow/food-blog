@@ -4,7 +4,8 @@ import {
   getAllRecipes,
   getSingleRecipe,
   postRecipe,
-  deleteRecipe
+  deleteRecipe,
+  getRecipeCardInfo
 } from "../controllers/recipesController.js";
 import {
   postComment,
@@ -12,7 +13,7 @@ import {
   deleteComment,
   updateComment
 } from "../controllers/commentController.js";
-import {getRecipeCardInfo} from "../db/userInfo.js"
+// import {getRecipeCardInfo} from "../db/userInfo.js"
 const router = Router();
 
 // recipes/

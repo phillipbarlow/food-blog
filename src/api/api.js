@@ -45,8 +45,12 @@ export function updateUserApi(payload) {
   });
 }
 
-export async function getRecipes() {
-  return request("/recipes");
+export async function getRecipes(category) {
+  if(category){
+    return request(`/recipes?category=${category}`);
+  }else{
+    return request("/recipes");
+  }
 }
 
 export function getRecipe(recipeId) {
