@@ -9,57 +9,56 @@ import {
 import { useAuth } from "../hooks/userAuth.js";
 
 export default function CommentSection({ recipeId }) {
-   const {user} = useAuth()
-   console.log(user)
-   const [comment, setComment] = useState("");
-   const [comments, setComments] = useState([]);
-   const [isPosting, setIsPosting] = useState(false);
-   
-   const [editingId, setEditingId] = useState(null);
-   const [editValue, setEditValue] = useState("");
-  //  console.log(user,'--user from comment section')
-   
-   useEffect(() => {
-     const fetchRecipeComments = async () => {
-       try {
-         const data = await getRecipesComments(recipeId);
-         console.log(data,'from line 25')
-         setComments(data.comments);
-        } catch (error) {
-          console.log("Error from fetching recipes own comments ", error);
-        }
-      };
-      fetchRecipeComments();
-    }, [recipeId,isPosting]);
-    
-    const handlePost = async () => {
-      if (comment.trim() === "") return;
-      setIsPosting(true);
-      const newComment = {
-        userId:user.id,
-        name: user.displayName,
-        username:user.username,
-        time: new Date().toISOString().replace("T", " ").slice(0, 16),
-        comment,
-        avatar: "/user.png",
-        rating: null,
-      };
+  const { user } = useAuth();
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+  const [isPosting, setIsPosting] = useState(false);
+
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState("");
+  //  console.log(recipeId,'-- from comment section')
+
+  useEffect(() => {
+    const fetchRecipeComments = async () => {
       try {
-        const created = await postComment(recipeId, newComment);
-        // console.log(created)
-        setComments((prevComments) => [created, ...prevComments]);
-        setComment("");
-        // console.log(comments,'--line 52')
+        const data = await getRecipesComments(recipeId);
+        // console.log(data.comments, "from line 25");
+        setComments(data.comments);
       } catch (error) {
-        console.log("Error posting comment:", error);
-      } finally {
-        setIsPosting(false);
+        console.log("Error from fetching recipes own comments ", error);
       }
     };
-    
+    fetchRecipeComments();
+  }, [recipeId, isPosting]);
+
+  const handlePost = async () => {
+    if (comment.trim() === "") return;
+    setIsPosting(true);
+    const newComment = {
+      userId: user.id,
+      name: user.displayName,
+      username: user.username,
+      time: new Date().toISOString().replace("T", " ").slice(0, 16),
+      comment,
+      avatar: "/user.png",
+      rating: null,
+    };
+    try {
+      console.log("reached")
+      const created = await postComment(recipeId, newComment);
+      // console.log(created)
+      setComments((prevComments) => [created, ...prevComments]);
+      setComment("");
+    } catch (error) {
+      console.log("Error posting comment:", error);
+    } finally {
+      setIsPosting(false);
+    }
+  };
+
   const handleDeleteComment = async (commentId) => {
     try {
-      await deleteComment(commentId);
+      await deleteComment(recipeId,commentId);
       setComments((curr) => curr.filter((comment) => comment.id !== commentId));
     } catch (err) {
       console.log("Error from handle delete ", err);
@@ -75,7 +74,6 @@ export default function CommentSection({ recipeId }) {
     // console.log(id, editId);
     try {
       await updateComment(recipeId, editId, { comment: editValue });
-      // console.log(res)
     } catch (err) {
       console.log("Error from handleUpdateComment ", err);
     }
@@ -106,7 +104,6 @@ export default function CommentSection({ recipeId }) {
           placeholder="Add a comment..."
           rows="2"
           onKeyDown={(e) => {
-            // console.log(e.key)
             if (e.key === "Enter") {
               e.preventDefault();
               handlePost();
@@ -125,7 +122,6 @@ export default function CommentSection({ recipeId }) {
       <div className="mt-6 space-y-6">
         {comments.length > 0 &&
           comments.map((c) => {
-            console.log(c)
             const isEditing = editingId === c.id;
             return (
               <div key={c.id} className="flex items-start gap-4">
@@ -136,16 +132,20 @@ export default function CommentSection({ recipeId }) {
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
-                    <p className="font-semibold text-slate-900">{c.display_name}</p>
+                    <p className="font-semibold text-slate-900">
+                      {c.display_name}
+                    </p>
                     <span className="text-sm text-slate-500">{c.time}</span>
-                    {user.id === c.user_id && (<button
-                      type="button"
-                      onClick={() => handleDeleteComment(c.id)}
-                      className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
-                      aria-label={`Delete comment from ${c.name}`}
-                    >
-                      Delete comment
-                    </button>)}
+                    {user.id === c.user_id && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteComment(c.id)}
+                        className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
+                        aria-label={`Delete comment from ${c.name}`}
+                      >
+                        Delete comment
+                      </button>
+                    )}
                   </div>
 
                   {isEditing ? (
@@ -175,13 +175,14 @@ export default function CommentSection({ recipeId }) {
                       <p className="text-slate-700 text-sm leading-relaxed">
                         {c.comment}
                       </p>
-                      {user.id === c.user_id && (<button
-                        className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
-                        // onClick={() => setEditComment(c.id)}
-                        onClick={() => startEditing(c)}
-                      >
-                        Edit
-                      </button>)}
+                      {user.id === c.user_id && (
+                        <button
+                          className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
+                          onClick={() => startEditing(c)}
+                        >
+                          Edit
+                        </button>
+                      )}
                     </>
                   )}
                 </div>

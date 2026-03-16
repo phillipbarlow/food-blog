@@ -1,11 +1,12 @@
 import { useParams, Link } from "react-router-dom";
 import CommentSection from "../components/CommentSection";
 import { useEffect, useState } from "react";
-import { deleteRecipe } from "../api/api.js";
+import { deleteRecipe,updateLike, getRecipeLikes } from "../api/api.js";
 import { useAuth } from "../hooks/userAuth.js";
 export default function RecipeDetail() {
   const [recipe, setRecipe] = useState(null);
   const [isLoading, setLoading] = useState(true);
+  const [like, setLike] = useState(0)
   const { recipeId } = useParams();
   // console.log(useParams())
   const { isAuthenticated, user } = useAuth();
@@ -15,16 +16,20 @@ export default function RecipeDetail() {
     const fetchRecipe = async () => {
       try {
         const res = await fetch(`http://localhost:5001/recipes/${recipeId}`);
-
+        const likeRes = await getRecipeLikes(recipeId)
+        const likeCount = Number(likeRes.likes.count)
+        console.log(likeCount)
         if (!res.ok) {
           setRecipe(null);
           return;
         }
         const json = await res.json();
         let recipeData = json.recipe;
-        const instructions = JSON.parse(recipeData.instructions);
-        recipeData.instructions = instructions
-        setRecipe(json);
+
+        recipeData.instructions = JSON.parse(recipeData.instructions);
+        
+        setRecipe(recipeData);
+        setLike(likeCount)
       } catch (error) {
         console.log("fetch error ", error);
         setRecipe(null);
@@ -44,6 +49,15 @@ export default function RecipeDetail() {
     }
   };
 
+  const handleLike = async ()=>{
+    try{
+      await updateLike(recipeId)
+      setLike((curr)=> curr + 1)
+    }catch(err){
+      console.log("Update like error ", err)
+    }
+  }
+
   if (isLoading) {
     return (
       <main>
@@ -62,18 +76,17 @@ export default function RecipeDetail() {
     );
   } else {
     // console.log(recipe)
-    console.log(recipe)
     return (
       <main className="max-w-5xl mx-auto p-6 bg-gray-50 lg:rounded-xl pt-18 lg:mt-12">
         {/* Main page */}
         <div className="grid md:grid-cols-2 sm:gap-0 xl:gap-8 items-start">
           {/* <div className="space-y-4"> */}
             <img
-              src={recipe.recipe.image}
+              src={recipe.image}
               alt={recipe.title}
               className="w-full rounded-xl  object-cover"
             />
-            {isAuthenticated && user.id === recipe.recipe.user_id && (
+            {isAuthenticated && user.id === recipe.user_id && (
               <button
                 onClick={handleDelete}
                 className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400"
@@ -93,17 +106,7 @@ export default function RecipeDetail() {
             </div>
             <h2 className="text-xl font-semibold mb-2 ">Ingredients</h2>
             <p>{recipe.created_by}</p>
-            {/* <ul className="list-disc pl-5 space-y-1 mb-6 text-gray-800">
-            {recipe.map((ingred, i) => (
-              <li key={i}>{ingred}</li>
-            ))}
-          </ul> */}
-            {/* <h2 className="text-xl font-semibold mb-2 ">Steps</h2> */}
-            {/* <ol className="list-decimal pl-5 space-y-2 text-gray-800">
-            {recipeId.steps.map((steps, i) => (
-              <li key={i}>{steps}</li>
-            ))} 
-          </ol>) */}
+            
             <Link
               className="inline-block mt-0 text-emerald-600 underline"
               to="/"
@@ -111,6 +114,10 @@ export default function RecipeDetail() {
               ← Back to recipes
             </Link>
           </div>
+        </div>
+        <div>
+          <button onClick={handleLike}>❤️</button>
+          <section>Like count: {like}</section>
         </div>
         <CommentSection recipeId={recipeId} />
       </main>

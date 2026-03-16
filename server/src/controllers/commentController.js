@@ -5,7 +5,6 @@ export async function postComment(req, res) {
   const recipeId = Number(req.params.recipeId);
   const { comment, rating, name } = req.body;
   const userId = req.user.id;
-
   const time = new Date().toISOString().replace("T", " ").slice(0, 16);
   const avatar = "/user.png";
   const missing = [];
@@ -28,6 +27,9 @@ export async function postComment(req, res) {
        RETURNING *;`,
       [recipeId, userId, name, time, comment, avatar, rating || null],
     );
+    if (result.rows.length === 0) {
+  return res.status(404).json({ error: "No comment found" });
+}
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("❌ Error inserting comment:", error);

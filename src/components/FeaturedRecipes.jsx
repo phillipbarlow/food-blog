@@ -49,6 +49,8 @@ export default function FeaturedRecipes() {
                 title={r.title}
                 image={r.image}
                 description={r.description}
+                likes={r.likes}
+                commentCount={r.comment_count}
               />
             </div>
           ))}

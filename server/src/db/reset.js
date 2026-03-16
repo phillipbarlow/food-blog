@@ -47,6 +47,13 @@ async function reset() {
             likes INTEGER NOT NULL DEFAULT 0
             );
             `);
+    await pool.query(
+      `CREATE TABLE recipe_likes (
+      user_id INT REFERENCES users(id) ON DELETE CASCADE,
+      recipe_id INT REFERENCES recipes(id) ON DELETE CASCADE,
+      UNIQUE(user_id, recipe_id)
+      );`,
+    );
 
     const userIds = [];
 
@@ -87,7 +94,7 @@ async function reset() {
           instructionsString,
           i % 2 === 0 ? "cooking" : "baking",
           image,
-          username
+          username,
         ],
       );
     }

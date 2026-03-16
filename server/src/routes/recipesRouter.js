@@ -5,7 +5,9 @@ import {
   getSingleRecipe,
   postRecipe,
   deleteRecipe,
-  getRecipeCardInfo
+  getRecipeCardInfo,
+  insertRecipeLike,
+  getRecipeLikes
 } from "../controllers/recipesController.js";
 import {
   postComment,
@@ -22,7 +24,9 @@ router.get("/", getRecipeCardInfo);
 router.post("/",requireAuth, postRecipe);
 router.get("/:recipeId", getSingleRecipe);
 router.delete("/:recipeId",requireAuth, deleteRecipe);
-
+// router.patch("/:recipeId/like",requireAuth,recipeLike)
+router.post("/:recipeId/like",requireAuth,insertRecipeLike)
+router.get("/:recipeId/like",getRecipeLikes)
 // comments for a recipe
 router.get("/:recipeId/comments", getAllComments);
 router.post("/:recipeId/comments",requireAuth,postComment)

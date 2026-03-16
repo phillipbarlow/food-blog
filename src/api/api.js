@@ -6,7 +6,7 @@ async function request(endpoint, options = {}) {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
-
+// console.log(res.status, data);
   const data = await res.json();
   if (!res.ok) {
     const error = new Error(data.error || "Request failed");
@@ -61,6 +61,10 @@ export async function getRecipesComments(recipeId) {
   return request(`/recipes/${recipeId}/comments`);
 }
 
+export async function getRecipeLikes(recipeId){
+  return request(`/recipes/${recipeId}/like`)
+}
+
 // Routes require user authentication
 
 export function postComment(recipeId, payload) {
@@ -85,6 +89,18 @@ export function postRecipe(payload) {
   });
 }
 
+
+
+export function updateLike(recipeId){
+  return request(`/recipes/${recipeId}/like`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 export function deleteRecipe(recipeId) {
   return request(`/recipes/${recipeId}`, {
     method: "DELETE",
@@ -96,6 +112,7 @@ export function deleteRecipe(recipeId) {
 }
 
 export function deleteComment(recipeId, commentId) {
+  console.log(commentId)
   return request(`/recipes/${recipeId}/comments/${commentId}`, {
     method: "DELETE",
     headers: {

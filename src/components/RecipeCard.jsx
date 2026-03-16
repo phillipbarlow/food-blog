@@ -11,6 +11,8 @@ export default function RecipeCard({
   prepTime,
   servings,
   alt,
+  likes,
+  commentCount
 }) {
 
   return (
@@ -64,7 +66,7 @@ export default function RecipeCard({
                 />
             </svg>
             
-            <span>14</span>
+            <span>{commentCount}</span>
           </button>
           {/* likes */}
           <button className="flex items-center gap-2 hover:text-emerald-600">
@@ -82,7 +84,7 @@ export default function RecipeCard({
                 d="M4.318 6.318a4.5 4.5 0 0 1 6.364 0L12 7.636l1.318-1.318a4.5 4.5 0 1 1 6.364 6.364L12 21 4.318 12.682a4.5 4.5 0 0 1 0-6.364z"
                 />
             </svg>
-            <span>153</span>
+            <span>{likes}</span>
           </button>
         </div>
       </div>

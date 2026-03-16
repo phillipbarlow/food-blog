@@ -1,14 +1,63 @@
 import { pool } from "../db/pool.js";
 import cloudinary from "../../config/cloudinary.js";
 
+export async function getRecipeLikes(req, res) {
+  const recipeId = Number(req.params.recipeId);
+
+  try {
+    const result = await pool.query(
+      `SELECT COUNT(*) 
+        FROM recipe_likes
+        WHERE recipe_id = $1;`,
+      [recipeId],
+    );
+     console.log(result.rows[0])
+    res.json({
+      message: "Recipe liked",
+      likes: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error getting likes:", error);
+    res.status(500).json({ error: "Database error" });
+  }
+}
+
+export async function insertRecipeLike(req, res) {
+  const recipeId = Number(req.params.recipeId);
+  const userId = req.user.id;
+  try {
+    const result = await pool.query(
+      `INSERT INTO recipe_likes (user_id, recipe_id)
+        VALUES ($1, $2)
+        RETURNING *;`,
+      [userId, recipeId],
+    );
+
+    if (result.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "User can't update recipe more than once" });
+    }
+    res.json({
+      message: "Recipe liked",
+      likes: result.rows[0].likes,
+    });
+  } catch (error) {
+    if(error.code === "23505"){
+      return res.status(409).json({
+        error: "User has already liked this recipe"
+      })
+    }
+    console.error("Error updating likes:", error);
+    res.status(500).json({ error: "Database error insert recipe like" });
+  }
+}
+
 export async function getRecipeCardInfo(req, res) {
   const { category } = req.query;
-  console.log(category);
-  console.log(req.query);
   try {
     let result;
     if (category === "baking" || category === "cooking") {
-      console.log(category);
       result = await pool.query(
         `SELECT
         r.id,
@@ -39,12 +88,10 @@ export async function getRecipeCardInfo(req, res) {
         ORDER BY r.id DESC;`,
       );
     }
-    
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "No recipes found" });
     }
-    
-    // console.log(result.rows);
+
     res.json({
       message: "Recipes recieved successfully",
       recipes: result.rows,
