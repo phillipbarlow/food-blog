@@ -1,12 +1,11 @@
 import { Router } from "express";
 import {requireAuth} from "../middleware/authMiddleware.js"
 import {
-  getAllRecipes,
   getSingleRecipe,
   postRecipe,
   deleteRecipe,
   getRecipeCardInfo,
-  insertRecipeLike,
+  toggleRecipeLike,
   getRecipeLikes
 } from "../controllers/recipesController.js";
 import {
@@ -25,7 +24,7 @@ router.post("/",requireAuth, postRecipe);
 router.get("/:recipeId", getSingleRecipe);
 router.delete("/:recipeId",requireAuth, deleteRecipe);
 // router.patch("/:recipeId/like",requireAuth,recipeLike)
-router.post("/:recipeId/like",requireAuth,insertRecipeLike)
+router.post("/:recipeId/like",requireAuth,toggleRecipeLike)
 router.get("/:recipeId/like",getRecipeLikes)
 // comments for a recipe
 router.get("/:recipeId/comments", getAllComments);

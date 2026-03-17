@@ -17,7 +17,7 @@ export default function RecipeDetail() {
       try {
         const res = await fetch(`http://localhost:5001/recipes/${recipeId}`);
         const likeRes = await getRecipeLikes(recipeId)
-        const likeCount = Number(likeRes.likes.count)
+        const likeCount = Number(likeRes.likes)
         console.log(likeCount)
         if (!res.ok) {
           setRecipe(null);
@@ -51,8 +51,9 @@ export default function RecipeDetail() {
 
   const handleLike = async ()=>{
     try{
-      await updateLike(recipeId)
-      setLike((curr)=> curr + 1)
+      const likeRes = await updateLike(recipeId)
+      setLike(likeRes.likes)
+      console.log(likeRes)
     }catch(err){
       console.log("Update like error ", err)
     }

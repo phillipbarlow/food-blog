@@ -1,20 +1,57 @@
 import { pool } from "../db/pool.js";
 import cloudinary from "../../config/cloudinary.js";
 
-export async function getRecipeLikes(req, res) {
+export async function toggleRecipeLike(req, res) {
   const recipeId = Number(req.params.recipeId);
+  const userId = req.user.id;
 
   try {
-    const result = await pool.query(
-      `SELECT COUNT(*) 
-        FROM recipe_likes
-        WHERE recipe_id = $1;`,
+    const existingLike = await pool.query(
+      `SELECT * FROM recipe_likes
+       WHERE user_id = $1 AND recipe_id = $2;`,
+      [userId, recipeId],
+    );
+
+    if (existingLike.rows.length > 0) {
+      // if already liked, remove it
+      await pool.query(
+        `DELETE FROM recipe_likes
+         WHERE user_id = $1 AND recipe_id = $2;`,
+        [userId, recipeId],
+      );
+
+      const countResult = await pool.query(
+        `SELECT COUNT(*) AS likes
+         FROM recipe_likes
+         WHERE recipe_id = $1;`,
+        [recipeId],
+      );
+
+      return res.status(200).json({
+        message: "Recipe unliked",
+        liked: false,
+        likes: Number(countResult.rows[0].likes),
+      });
+    }
+
+    // if not liked yet, add it
+    await pool.query(
+      `INSERT INTO recipe_likes (user_id, recipe_id)
+       VALUES ($1, $2);`,
+      [userId, recipeId],
+    );
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*) AS likes
+       FROM recipe_likes
+       WHERE recipe_id = $1;`,
       [recipeId],
     );
-     console.log(result.rows[0])
-    res.json({
+
+    res.status(200).json({
       message: "Recipe liked",
-      likes: result.rows[0],
+      liked: true,
+      likes: Number(countResult.rows[0].likes),
     });
   } catch (error) {
     console.error("Error getting likes:", error);
@@ -22,34 +59,37 @@ export async function getRecipeLikes(req, res) {
   }
 }
 
-export async function insertRecipeLike(req, res) {
+export async function getRecipeLikes(req,res){
   const recipeId = Number(req.params.recipeId);
-  const userId = req.user.id;
-  try {
-    const result = await pool.query(
-      `INSERT INTO recipe_likes (user_id, recipe_id)
-        VALUES ($1, $2)
-        RETURNING *;`,
-      [userId, recipeId],
-    );
+  const userId = req.user?.id;
 
-    if (result.rows.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "User can't update recipe more than once" });
+  try{
+    const countResult = await pool.query(
+      `SELECT COUNT(*) AS likes
+      FROM recipe_likes
+      WHERE recipe_id = $1;`,
+      [recipeId]
+    )
+
+    let liked = false;
+
+    if(userId){
+      const likedResult = await pool.query(
+        `SELECT 1
+        FROM recipe_likes
+        WHERE recipe_id = $1 AND user_id = $2;`,
+        [recipeId, userId]
+      )
+      liked = likedResult.rows.length > 0;
     }
-    res.json({
-      message: "Recipe liked",
-      likes: result.rows[0].likes,
-    });
-  } catch (error) {
-    if(error.code === "23505"){
-      return res.status(409).json({
-        error: "User has already liked this recipe"
-      })
-    }
-    console.error("Error updating likes:", error);
-    res.status(500).json({ error: "Database error insert recipe like" });
+
+    res.status(200).json({
+      likes: Number(countResult.rows[0].likes),
+      liked,
+    })
+  }catch(error){
+    console.log("Error getting likes ", error);
+    res.status(500).json({error: "Database error"})
   }
 }
 
