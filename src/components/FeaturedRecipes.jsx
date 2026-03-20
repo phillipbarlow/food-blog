@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 // import { recipes } from "../data/recipes";
 import RecipeCard from "./RecipeCard";
-import { getRecipes } from "../api/api";
+import { getRecipePreview } from "../api/api";
 export default function FeaturedRecipes() {
   const [recipes, setRecipes] = useState([]);
   // useEffect(() => {
@@ -24,9 +24,10 @@ export default function FeaturedRecipes() {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const data = await getRecipes();
+        
+        const data = await getRecipePreview();
         console.log(data,'--featured recipes')
-        setRecipes(data.recipes);
+        setRecipes(data.recipe);
       } catch (err) {
         console.log("Error from FeaturedRecipes ", err);
       }

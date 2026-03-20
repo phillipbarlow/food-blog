@@ -53,6 +53,10 @@ export async function getRecipes(category) {
   }
 }
 
+export async function getRecipePreview(){
+  return request('/recipes/previewCard');
+}
+
 export function getRecipe(recipeId) {
   return request(`/recipes/${recipeId}`);
 }

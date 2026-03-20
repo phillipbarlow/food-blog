@@ -12,6 +12,7 @@ export default function Recipes() {
     const fetchRecipes = async () => {
       try {
         const response = await getRecipes(category);
+        console.log(response)
         setApiResponse(response);
       } catch (error) {
         console.error("Fetch error:", error);

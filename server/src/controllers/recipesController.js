@@ -59,37 +59,37 @@ export async function toggleRecipeLike(req, res) {
   }
 }
 
-export async function getRecipeLikes(req,res){
+export async function getRecipeLikes(req, res) {
   const recipeId = Number(req.params.recipeId);
   const userId = req.user?.id;
 
-  try{
+  try {
     const countResult = await pool.query(
       `SELECT COUNT(*) AS likes
       FROM recipe_likes
       WHERE recipe_id = $1;`,
-      [recipeId]
-    )
+      [recipeId],
+    );
 
     let liked = false;
 
-    if(userId){
+    if (userId) {
       const likedResult = await pool.query(
         `SELECT 1
         FROM recipe_likes
         WHERE recipe_id = $1 AND user_id = $2;`,
-        [recipeId, userId]
-      )
+        [recipeId, userId],
+      );
       liked = likedResult.rows.length > 0;
     }
 
     res.status(200).json({
       likes: Number(countResult.rows[0].likes),
       liked,
-    })
-  }catch(error){
+    });
+  } catch (error) {
     console.log("Error getting likes ", error);
-    res.status(500).json({error: "Database error"})
+    res.status(500).json({ error: "Database error" });
   }
 }
 
@@ -141,6 +141,40 @@ export async function getRecipeCardInfo(req, res) {
     res
       .status(500)
       .json({ error: `Database error from getAllRecipes ${error}` });
+  }
+}
+
+export async function getFeaturedRecipePreviews(req,res) {
+  try {
+    const result = await pool.query(
+      `SELECT
+        r.id,
+        r.title,
+        r.image,
+        (
+          SELECT COUNT(*) FROM recipe_likes rl
+          WHERE rl.recipe_id = r.id
+        ) AS likes,
+        (
+          SELECT COUNT(*) FROM comments c
+          WHERE c.recipe_id = r.id
+        ) AS comment_count
+      FROM recipes r;`,
+    );
+
+    if(result.rows.length === 0){
+      return res.status(404).json({error:"Featured recipe preview card not found"})
+    }
+
+    res.status(200).json({
+      message: "Recipe preview card recieved successfully",
+      recipe: result.rows,
+    })
+  } catch (error) {
+    console.error("Error fetching recipe preview ", error);
+    res
+      .status(500)
+      .json({ error: `Database error from getFeaturedRecipePreviews ${error}` });
   }
 }
 

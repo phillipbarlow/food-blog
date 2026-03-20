@@ -6,7 +6,8 @@ import {
   deleteRecipe,
   getRecipeCardInfo,
   toggleRecipeLike,
-  getRecipeLikes
+  getRecipeLikes,
+  getFeaturedRecipePreviews
 } from "../controllers/recipesController.js";
 import {
   postComment,
@@ -20,6 +21,7 @@ const router = Router();
 // recipes/
 // router.get("/", getAllRecipes);
 router.get("/", getRecipeCardInfo);
+router.get("/previewCard",getFeaturedRecipePreviews)
 router.post("/",requireAuth, postRecipe);
 router.get("/:recipeId", getSingleRecipe);
 router.delete("/:recipeId",requireAuth, deleteRecipe);
