@@ -159,7 +159,8 @@ export async function getFeaturedRecipePreviews(req,res) {
           SELECT COUNT(*) FROM comments c
           WHERE c.recipe_id = r.id
         ) AS comment_count
-      FROM recipes r;`,
+      FROM recipes r
+      ORDER BY id DESC;`,
     );
 
     if(result.rows.length === 0){

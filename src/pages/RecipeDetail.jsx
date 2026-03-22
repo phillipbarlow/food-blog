@@ -3,12 +3,14 @@ import CommentSection from "../components/CommentSection";
 import { useEffect, useState } from "react";
 import { deleteRecipe,updateLike, getRecipeLikes } from "../api/api.js";
 import { useAuth } from "../hooks/userAuth.js";
+import ConfirmDelete from "../components/ConfirmDelete.jsx";
 export default function RecipeDetail() {
   const [recipe, setRecipe] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const [like, setLike] = useState(0)
+  const [open, setOpen] = useState(false)
+  const [confirmDeleteloading, setConfirmDeleteLoading] = useState(false)
   const { recipeId } = useParams();
-  // console.log(useParams())
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
@@ -18,7 +20,6 @@ export default function RecipeDetail() {
         const res = await fetch(`http://localhost:5001/recipes/${recipeId}`);
         const likeRes = await getRecipeLikes(recipeId)
         const likeCount = Number(likeRes.likes)
-        console.log(likeCount)
         if (!res.ok) {
           setRecipe(null);
           return;
@@ -40,12 +41,17 @@ export default function RecipeDetail() {
     fetchRecipe();
   }, [recipeId]);
 
-  const handleDelete = async () => {
+  const handleDeleteRecipe = async () => {
     try {
+      if(confirmDeleteloading) return;
+      setConfirmDeleteLoading(true)
       await deleteRecipe(recipeId);
       setRecipe(null);
+      setOpen(false)
     } catch (err) {
       console.log("Deleting error ", err);
+    }finally{
+      setConfirmDeleteLoading(false)
     }
   };
 
@@ -76,12 +82,10 @@ export default function RecipeDetail() {
       </main>
     );
   } else {
-    // console.log(recipe)
+
     return (
       <main className="max-w-5xl mx-auto p-6 bg-gray-50 lg:rounded-xl pt-18 lg:mt-12">
-        {/* Main page */}
         <div className="grid md:grid-cols-2 sm:gap-0 xl:gap-8 items-start">
-          {/* <div className="space-y-4"> */}
             <img
               src={recipe.image}
               alt={recipe.title}
@@ -89,13 +93,19 @@ export default function RecipeDetail() {
             />
             {isAuthenticated && user.id === recipe.user_id && (
               <button
-                onClick={handleDelete}
+                onClick={()=>setOpen(true)}
                 className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400"
               >
                 Delete recipes
               </button>
             )}
-
+            <ConfirmDelete
+              isOpen={open}
+              onCancel={() => setOpen(false)}
+              onhandleDeleteRecipe={handleDeleteRecipe}
+              loading={confirmDeleteloading}
+              title= "Delete recipe"
+            />
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">
               {recipe.title}
@@ -122,8 +132,6 @@ export default function RecipeDetail() {
         </div>
         <CommentSection recipeId={recipeId} />
       </main>
-
-      // }
     );
   }
 }

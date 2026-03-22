@@ -73,7 +73,7 @@ export default function Nav() {
                 </Link>
               </li>
               <li>
-                <Link className="navItem" to="/recipes" onClick={() => setOpen(false)}>
+                <Link className="navItem" to="/recipes?category=cooking" onClick={() => setOpen(false)}>
                   Recipes
                 </Link>
               </li>
