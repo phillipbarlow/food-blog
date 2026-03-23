@@ -6,8 +6,8 @@ async function request(endpoint, options = {}) {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
-// console.log(res.status, data);
   const data = await res.json();
+  // console.log(data,"-- from api")
   if (!res.ok) {
     const error = new Error(data.error || "Request failed");
     error.status = res.status;
@@ -116,7 +116,7 @@ export function deleteRecipe(recipeId) {
 }
 
 export function deleteComment(recipeId, commentId) {
-  console.log(commentId)
+  // console.log(token)
   return request(`/recipes/${recipeId}/comments/${commentId}`, {
     method: "DELETE",
     headers: {

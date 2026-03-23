@@ -1,35 +1,33 @@
 import profileAvatar from "../images/man.png";
 import { useState, useEffect } from "react";
-import {
-  getRecipesComments,
-  postComment,
-  deleteComment,
-  updateComment,
-} from "../api/api.js";
+import { postComment, deleteComment, updateComment } from "../api/api.js";
 import { useAuth } from "../hooks/userAuth.js";
+import ConfirmDelete from "./ConfirmDelete.jsx";
+import PropTypes from "prop-types";
 
-export default function CommentSection({ recipeId }) {
-  const { user } = useAuth();
+export default function CommentSection({ recipeId, allComments }) {
+  const { user, isAuthenticated } = useAuth();
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [isPosting, setIsPosting] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
-  //  console.log(recipeId,'-- from comment section')
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState(null)
 
   useEffect(() => {
     const fetchRecipeComments = async () => {
       try {
-        const data = await getRecipesComments(recipeId);
-        // console.log(data.comments, "from line 25");
-        setComments(data.comments);
+        setComments(allComments);
       } catch (error) {
-        console.log("Error from fetching recipes own comments ", error);
+        console.log("Error from fetching recipes comments ", error);
       }
     };
+    // console.log(allComments);
     fetchRecipeComments();
-  }, [recipeId, isPosting]);
+  }, [recipeId, allComments]);
 
   const handlePost = async () => {
     if (comment.trim() === "") return;
@@ -44,9 +42,7 @@ export default function CommentSection({ recipeId }) {
       rating: null,
     };
     try {
-      console.log("reached")
       const created = await postComment(recipeId, newComment);
-      // console.log(created)
       setComments((prevComments) => [created, ...prevComments]);
       setComment("");
     } catch (error) {
@@ -57,11 +53,17 @@ export default function CommentSection({ recipeId }) {
   };
 
   const handleDeleteComment = async (commentId) => {
+    console.log(commentToDelete)
     try {
-      await deleteComment(recipeId,commentId);
+      setLoading(true);
+      await deleteComment(recipeId, commentId);
       setComments((curr) => curr.filter((comment) => comment.id !== commentId));
+      setOpen(false)
+      setCommentToDelete(null)
     } catch (err) {
       console.log("Error from handle delete ", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,6 +125,7 @@ export default function CommentSection({ recipeId }) {
         {comments.length > 0 &&
           comments.map((c) => {
             const isEditing = editingId === c.id;
+            // console.log(c.id,"--from map")
             return (
               <div key={c.id} className="flex items-start gap-4">
                 <img
@@ -136,18 +139,29 @@ export default function CommentSection({ recipeId }) {
                       {c.display_name}
                     </p>
                     <span className="text-sm text-slate-500">{c.time}</span>
-                    {user.id === c.user_id && (
+                    {isAuthenticated && user.id === c.user_id && (
                       <button
                         type="button"
-                        onClick={() => handleDeleteComment(c.id)}
+                        // onClick={() => handleDeleteComment(c.id)}
+                        onClick={() => {
+                          setOpen(true)
+                          setCommentToDelete(c.id)}}
                         className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
                         aria-label={`Delete comment from ${c.name}`}
                       >
                         Delete comment
                       </button>
                     )}
+                  <ConfirmDelete
+                    isOpen={open}
+                    onCancel={() => setOpen(false)}
+                    onConfirm={() => {
+                      handleDeleteComment(commentToDelete)}}
+                    loading={loading}
+                    title="Delete comment"
+                  />
                   </div>
-
+                  
                   {isEditing ? (
                     <div className="flex gap-2 mt-2">
                       <input
@@ -159,7 +173,10 @@ export default function CommentSection({ recipeId }) {
 
                       <button
                         className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
-                        onClick={() => handleSaveEdit(c.id)}
+                        onClick={() => {
+                          
+                          console.log(c.id,"--from edit")
+                          handleSaveEdit(c.id)}}
                       >
                         Save
                       </button>
@@ -193,3 +210,7 @@ export default function CommentSection({ recipeId }) {
     </div>
   );
 }
+CommentSection.propTypes = {
+  allComments: PropTypes.array.isRequired,
+  recipeId: PropTypes.array.isRequired,
+};

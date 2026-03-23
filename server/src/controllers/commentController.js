@@ -19,7 +19,7 @@ export async function postComment(req, res) {
       missing,
     });
   }
-  
+
   try {
     const result = await pool.query(
       `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
@@ -27,9 +27,10 @@ export async function postComment(req, res) {
        RETURNING *;`,
       [recipeId, userId, name, time, comment, avatar, rating || null],
     );
+    // console.log(result)
     if (result.rows.length === 0) {
-  return res.status(404).json({ error: "No comment found" });
-}
+      return res.status(404).json({ error: "No comment found" });
+    }
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error("❌ Error inserting comment:", error);
@@ -60,14 +61,12 @@ export async function deleteComment(req, res) {
     const result = await pool.query(
       `DELETE FROM comments WHERE comments.id = $1
       AND comments.recipe_id = $2
-      AND comments.user_id = $3 RETURNING *`,
+      AND comments.user_id = $3 
+      RETURNING *;`,
       [commentid, recipeid, userId],
     );
-
     if (result.rows.length === 0) {
-      return res
-        .status(403)
-        .json({ error: "You are not authorised to delete this comment" });
+      return res.status(404).json({ error: "Comment not found" });
     }
 
     res.status(200).json({
@@ -76,6 +75,9 @@ export async function deleteComment(req, res) {
     });
   } catch (err) {
     console.log("Database error deleting comment", err);
+       console.log("err.status:", err?.status);
+    console.log("err.message:", err?.message);
+    console.log("err.error:", err?.error);
     res.status(500).json({ error: "Database error" });
   }
 }
@@ -92,7 +94,7 @@ export async function getAllComments(req, res) {
       return res.status(404).json({ error: "Recipe not found" });
     }
     const result = await getCommentsWithUsers(recipeId);
-    
+
     return res.status(200).json({
       comments: result,
     });
@@ -107,7 +109,7 @@ export async function updateComment(req, res) {
   const { comment, rating } = req.body;
   const userId = req.user.id;
 
-   if (!comment && rating === undefined) {
+  if (!comment && rating === undefined) {
     return res.status(400).json({
       error: "Nothing to update. Provide comment or rating.",
     });
@@ -124,7 +126,11 @@ export async function updateComment(req, res) {
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Comment not found or you are not authorised to edit it" });
+      return res
+        .status(404)
+        .json({
+          error: "Comment not found or you are not authorised to edit it",
+        });
     }
 
     res.status(200).json({

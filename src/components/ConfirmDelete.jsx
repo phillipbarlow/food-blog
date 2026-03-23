@@ -1,13 +1,12 @@
 export default function ConfirmDelete({
   isOpen,
-  onhandleDeleteRecipe,
+  onConfirm,
   onCancel,
   loading,
   title = "Delete item?",
   message = "This action cannot be undone.",
 }) {
   if (!isOpen) return null;
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
@@ -29,7 +28,7 @@ export default function ConfirmDelete({
           </button>
 
           <button
-            onClick={onhandleDeleteRecipe}
+            onClick={onConfirm}
             className="px-4 py-2 text-sm text-white bg-red-600 hover:bg-red-700 rounded-lg disabled:opacity-50"
             disabled={loading}
           >

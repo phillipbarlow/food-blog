@@ -1,38 +1,47 @@
 import { useParams, Link } from "react-router-dom";
 import CommentSection from "../components/CommentSection";
 import { useEffect, useState } from "react";
-import { deleteRecipe,updateLike, getRecipeLikes } from "../api/api.js";
+import { deleteRecipe,updateLike, getRecipeLikes,getRecipesComments} from "../api/api.js";
 import { useAuth } from "../hooks/userAuth.js";
 import ConfirmDelete from "../components/ConfirmDelete.jsx";
 export default function RecipeDetail() {
-  const [recipe, setRecipe] = useState(null);
+  const [recipe, setRecipe] = useState({});
+  const [recipeComments, setRecipeComments] = useState([])
   const [isLoading, setLoading] = useState(true);
   const [like, setLike] = useState(0)
   const [open, setOpen] = useState(false)
   const [confirmDeleteloading, setConfirmDeleteLoading] = useState(false)
   const { recipeId } = useParams();
   const { isAuthenticated, user } = useAuth();
-
   useEffect(() => {
     setLoading(true);
     const fetchRecipe = async () => {
       try {
+        const commentsResponse = await getRecipesComments(recipeId)
         const res = await fetch(`http://localhost:5001/recipes/${recipeId}`);
+        
         const likeRes = await getRecipeLikes(recipeId)
         const likeCount = Number(likeRes.likes)
+        
+        // console.log(isAuthenticated, user.id)
+        // console.log(commentsResponse.comments)
         if (!res.ok) {
           setRecipe(null);
           return;
         }
         const json = await res.json();
         let recipeData = json.recipe;
-
+        
         recipeData.instructions = JSON.parse(recipeData.instructions);
         
         setRecipe(recipeData);
+        setRecipeComments(commentsResponse.comments)
         setLike(likeCount)
+        // console.log(recipe)
+        // console.log(recipeComments)
+        
       } catch (error) {
-        console.log("fetch error ", error);
+        console.log("fetch error from recipe detail", error);
         setRecipe(null);
       } finally {
         setLoading(false);
@@ -40,10 +49,8 @@ export default function RecipeDetail() {
     };
     fetchRecipe();
   }, [recipeId]);
-
   const handleDeleteRecipe = async () => {
     try {
-      if(confirmDeleteloading) return;
       setConfirmDeleteLoading(true)
       await deleteRecipe(recipeId);
       setRecipe(null);
@@ -54,17 +61,17 @@ export default function RecipeDetail() {
       setConfirmDeleteLoading(false)
     }
   };
-
+  
   const handleLike = async ()=>{
     try{
       const likeRes = await updateLike(recipeId)
       setLike(likeRes.likes)
-      console.log(likeRes)
+      // console.log(likeRes)
     }catch(err){
       console.log("Update like error ", err)
     }
   }
-
+  
   if (isLoading) {
     return (
       <main>
@@ -82,7 +89,8 @@ export default function RecipeDetail() {
       </main>
     );
   } else {
-
+    
+   
     return (
       <main className="max-w-5xl mx-auto p-6 bg-gray-50 lg:rounded-xl pt-18 lg:mt-12">
         <div className="grid md:grid-cols-2 sm:gap-0 xl:gap-8 items-start">
@@ -90,22 +98,22 @@ export default function RecipeDetail() {
               src={recipe.image}
               alt={recipe.title}
               className="w-full rounded-xl  object-cover"
-            />
+              />
             {isAuthenticated && user.id === recipe.user_id && (
               <button
-                onClick={()=>setOpen(true)}
-                className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400"
+              onClick={()=>setOpen(true)}
+              className="bg-red-600 text-white py-3 px-6 mx-auto rounded-b-2xl md:rounded-xl text-1xl block tracking-wide hover:bg-red-400"
               >
                 Delete recipes
               </button>
             )}
-            <ConfirmDelete
+            {isAuthenticated && user.id === recipe.user_id && (<ConfirmDelete
               isOpen={open}
               onCancel={() => setOpen(false)}
-              onhandleDeleteRecipe={handleDeleteRecipe}
+              onConfirm={handleDeleteRecipe}
               loading={confirmDeleteloading}
               title= "Delete recipe"
-            />
+            />)}
           <div>
             <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gray-900">
               {recipe.title}
@@ -130,7 +138,7 @@ export default function RecipeDetail() {
           <button onClick={handleLike}>❤️</button>
           <section>Like count: {like}</section>
         </div>
-        <CommentSection recipeId={recipeId} />
+        <CommentSection recipeId={recipeId} allComments={recipeComments}/>
       </main>
     );
   }
