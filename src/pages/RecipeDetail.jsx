@@ -24,7 +24,7 @@ export default function RecipeDetail() {
         const likeCount = Number(likeRes.likes)
         
         // console.log(isAuthenticated, user.id)
-        // console.log(commentsResponse.comments)
+        console.log(commentsResponse.comments)
         if (!res.ok) {
           setRecipe(null);
           return;
@@ -37,8 +37,8 @@ export default function RecipeDetail() {
         setRecipe(recipeData);
         setRecipeComments(commentsResponse.comments)
         setLike(likeCount)
-        // console.log(recipe)
-        // console.log(recipeComments)
+        console.log(recipe)
+        console.log(recipeComments)
         
       } catch (error) {
         console.log("fetch error from recipe detail", error);
@@ -66,7 +66,7 @@ export default function RecipeDetail() {
     try{
       const likeRes = await updateLike(recipeId)
       setLike(likeRes.likes)
-      // console.log(likeRes)
+      console.log(likeRes)
     }catch(err){
       console.log("Update like error ", err)
     }
@@ -107,7 +107,7 @@ export default function RecipeDetail() {
                 Delete recipes
               </button>
             )}
-            {isAuthenticated && user.id === recipe.user_id && (<ConfirmDelete
+            {isAuthenticated && user.id === recipeComments.user_id && (<ConfirmDelete
               isOpen={open}
               onCancel={() => setOpen(false)}
               onConfirm={handleDeleteRecipe}
@@ -135,7 +135,7 @@ export default function RecipeDetail() {
           </div>
         </div>
         <div>
-          <button onClick={handleLike}>❤️</button>
+          {isAuthenticated && <button onClick={handleLike}>❤️</button>}
           <section>Like count: {like}</section>
         </div>
         <CommentSection recipeId={recipeId} allComments={recipeComments}/>

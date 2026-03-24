@@ -1,4 +1,4 @@
-import profileAvatar from "../images/man.png";
+// import profileAvatar from "../images/user.png";
 import { useState, useEffect } from "react";
 import { postComment, deleteComment, updateComment } from "../api/api.js";
 import { useAuth } from "../hooks/userAuth.js";
@@ -15,7 +15,7 @@ export default function CommentSection({ recipeId, allComments }) {
   const [editValue, setEditValue] = useState("");
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [commentToDelete, setCommentToDelete] = useState(null)
+  const [commentToDelete, setCommentToDelete] = useState(null);
 
   useEffect(() => {
     const fetchRecipeComments = async () => {
@@ -28,7 +28,8 @@ export default function CommentSection({ recipeId, allComments }) {
     // console.log(allComments);
     fetchRecipeComments();
   }, [recipeId, allComments]);
-
+  
+  // console.log(allComments)
   const handlePost = async () => {
     if (comment.trim() === "") return;
     setIsPosting(true);
@@ -38,7 +39,6 @@ export default function CommentSection({ recipeId, allComments }) {
       username: user.username,
       time: new Date().toISOString().replace("T", " ").slice(0, 16),
       comment,
-      avatar: "/user.png",
       rating: null,
     };
     try {
@@ -53,13 +53,12 @@ export default function CommentSection({ recipeId, allComments }) {
   };
 
   const handleDeleteComment = async (commentId) => {
-    console.log(commentToDelete)
     try {
       setLoading(true);
       await deleteComment(recipeId, commentId);
       setComments((curr) => curr.filter((comment) => comment.id !== commentId));
-      setOpen(false)
-      setCommentToDelete(null)
+      setOpen(false);
+      setCommentToDelete(null);
     } catch (err) {
       console.log("Error from handle delete ", err);
     } finally {
@@ -73,7 +72,6 @@ export default function CommentSection({ recipeId, allComments }) {
   };
 
   const handleSaveEdit = async (editId) => {
-    // console.log(id, editId);
     try {
       await updateComment(recipeId, editId, { comment: editValue });
     } catch (err) {
@@ -97,8 +95,7 @@ export default function CommentSection({ recipeId, allComments }) {
         Comments
       </h2>
       {/* Add comment */}
-      <div className="flex gap-3 items-start bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-        <img src={profileAvatar} alt="Default avatar" className="h-10 w-10" />
+      {isAuthenticated && <div className="flex gap-3 items-start bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
         <textarea
           className="flex-1 resize-none border border-slate-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400"
           value={comment}
@@ -118,50 +115,48 @@ export default function CommentSection({ recipeId, allComments }) {
         >
           {isPosting ? "Posting" : "Post"}
         </button>
-      </div>
+      </div>}
       {/* Comment List */}
-
       <div className="mt-6 space-y-6">
         {comments.length > 0 &&
           comments.map((c) => {
             const isEditing = editingId === c.id;
-            // console.log(c.id,"--from map")
             return (
               <div key={c.id} className="flex items-start gap-4">
                 <img
                   src={c.avatar}
-                  alt={c.name}
+                  alt={c.user}
                   className="h-12 w-12 rounded-full"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
-                    <p className="font-semibold text-slate-900">
-                      {c.display_name}
-                    </p>
+                    <p className="font-semibold text-slate-900">{c.username}</p>
                     <span className="text-sm text-slate-500">{c.time}</span>
                     {isAuthenticated && user.id === c.user_id && (
                       <button
                         type="button"
                         // onClick={() => handleDeleteComment(c.id)}
                         onClick={() => {
-                          setOpen(true)
-                          setCommentToDelete(c.id)}}
+                          setOpen(true);
+                          setCommentToDelete(c.id);
+                        }}
                         className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
                         aria-label={`Delete comment from ${c.name}`}
                       >
                         Delete comment
                       </button>
                     )}
-                  <ConfirmDelete
-                    isOpen={open}
-                    onCancel={() => setOpen(false)}
-                    onConfirm={() => {
-                      handleDeleteComment(commentToDelete)}}
-                    loading={loading}
-                    title="Delete comment"
-                  />
+                    <ConfirmDelete
+                      isOpen={open}
+                      onCancel={() => setOpen(false)}
+                      onConfirm={() => {
+                        handleDeleteComment(commentToDelete);
+                      }}
+                      loading={loading}
+                      title="Delete comment"
+                    />
                   </div>
-                  
+
                   {isEditing ? (
                     <div className="flex gap-2 mt-2">
                       <input
@@ -174,9 +169,9 @@ export default function CommentSection({ recipeId, allComments }) {
                       <button
                         className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
                         onClick={() => {
-                          
-                          console.log(c.id,"--from edit")
-                          handleSaveEdit(c.id)}}
+                          console.log(c.id, "--from edit");
+                          handleSaveEdit(c.id);
+                        }}
                       >
                         Save
                       </button>
@@ -192,7 +187,7 @@ export default function CommentSection({ recipeId, allComments }) {
                       <p className="text-slate-700 text-sm leading-relaxed">
                         {c.comment}
                       </p>
-                      {user.id === c.user_id && (
+                      {isAuthenticated && user.id === c.user_id && (
                         <button
                           className="ml-4 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full p-1 h-fit transition-colors"
                           onClick={() => startEditing(c)}
