@@ -6,7 +6,8 @@ export async function postComment(req, res) {
   const { comment, rating, name } = req.body;
   const userId = req.user.id;
   const time = new Date().toISOString().replace("T", " ").slice(0, 16);
-  const avatar = "/user.png";
+  const DEFAULT_IMAGE = "http://localhost:5001/images/default.png";
+  const image = req.body.avatar || DEFAULT_IMAGE;
   const missing = [];
   if (!recipeId) missing.push("recipeId");
   if (!name) missing.push("name");
@@ -25,7 +26,7 @@ export async function postComment(req, res) {
       `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *;`,
-      [recipeId, userId, name, time, comment, avatar, rating || null],
+      [recipeId, userId, name, time, comment, image, rating || null],
     );
     // console.log(result)
     if (result.rows.length === 0) {
@@ -75,9 +76,6 @@ export async function deleteComment(req, res) {
     });
   } catch (err) {
     console.log("Database error deleting comment", err);
-       console.log("err.status:", err?.status);
-    console.log("err.message:", err?.message);
-    console.log("err.error:", err?.error);
     res.status(500).json({ error: "Database error" });
   }
 }
@@ -89,6 +87,8 @@ export async function getAllComments(req, res) {
     const recipe = await pool.query("SELECT * FROM recipes WHERE id = $1 ", [
       recipeId,
     ]);
+
+    console.log(recipe.rows[0])
 
     if (recipe.rows.length === 0) {
       return res.status(404).json({ error: "Recipe not found" });

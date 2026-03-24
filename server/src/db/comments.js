@@ -3,7 +3,7 @@ import { pool } from "./pool.js";
 export async function getCommentsWithUsers(recipeId) {
   const result = await pool.query(
     `SELECT 
-       c.id, c.comment, c.time, c.rating,c.user_id,
+       c.id, c.comment, c.time, c.rating,c.user_id, c.avatar,
        u.username, u.display_name
      FROM comments c
      JOIN users u ON c.user_id = u.id

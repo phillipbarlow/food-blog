@@ -20,6 +20,7 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/recipes", recipesRouter);
 app.use("/auth", authRouter);
+app.use("/images", express.static("src/public/images"));
 
 app.use((req, res) => {
   res.status(404).json({
