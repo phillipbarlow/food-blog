@@ -15,18 +15,31 @@ export default function PostRecipeForm() {
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loadingImage,setLoadingImage] = useState(false)
   const {user} = useAuth();
   const navigate = useNavigate();
-// console.log(user,"line 20")
-  useEffect(()=>{
 
-  },[user])
-  
+  console.log(loadingImage)
   async function handleImageUpload(e) {
     const file = e.target.files[0];
-    const smallFile = await shrink(file)
-    const url = await uploadImageToCloudinary(smallFile);
-    setImageFile(url);
+    try{
+      setLoadingImage(true)
+      const smallFile = await shrink(file)
+      const url = await uploadImageToCloudinary(smallFile);
+      setImageFile(url);
+
+    }catch(err){
+      console.log("Error uploading file ", err)
+    }finally{
+      setLoadingImage(false)
+    }
+    // if(file){
+    //   console.log('line 28')
+    //   setLoadingImage(true)
+    // }else{
+    //   console.log("line 31")
+    //   setLoadingImage(false)
+    // }
   }
   
   function handleIngredientChange(value, index) {
@@ -271,8 +284,8 @@ export default function PostRecipeForm() {
           <button type="button" className="clear-button" onClick={clearAll}>
             Clear all
           </button>
-          <button type="submit" className="primary-button">
-            Save recipe
+          <button disabled={loadingImage} type="submit" className="primary-button">
+            {loadingImage?"Uploading image ..." :"Save recipe"}
           </button>
         </div>
       </form>
