@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/recipeForm.css";
 import { postRecipe } from "../api/api.js";
 import { useNavigate } from "react-router-dom";
 import { uploadImageToCloudinary } from "../utils/uploadToCloudinary.js";
 import { shrink } from "../utils/shrink.js";
 import { useAuth } from "../hooks/userAuth.js";
+import defaultImage from "../images/no-image.png"
 export default function PostRecipeForm() {
   const [ingredients, setIngredients] = useState([""]);
   const [steps, setSteps] = useState([""]);
@@ -16,16 +17,16 @@ export default function PostRecipeForm() {
   const [error, setError] = useState("");
   const {user} = useAuth();
   const navigate = useNavigate();
+// console.log(user,"line 20")
+  useEffect(()=>{
+
+  },[user])
   
   async function handleImageUpload(e) {
     const file = e.target.files[0];
-    if(!file) return;
-    
     const smallFile = await shrink(file)
     const url = await uploadImageToCloudinary(smallFile);
     setImageFile(url);
-    
-    console.log("Uploaded image URL:", url);
   }
   
   function handleIngredientChange(value, index) {
@@ -61,6 +62,7 @@ export default function PostRecipeForm() {
   }
   const handlePost = async (pay) => {
     try {
+      console.log('reached line 70',pay)
       const response = await postRecipe(pay);
       navigate(`/recipes/${response.recipe.id}`);
     } catch (err) {
@@ -75,6 +77,7 @@ export default function PostRecipeForm() {
       let imageUrl = null;
       if (imageFile) {
         imageUrl = await uploadImageToCloudinary(imageFile);
+        console.log("image url--", imageUrl)
       }
       const trimmerTitle = title.trim();
       const trimmedIngredients = ingredients
@@ -89,8 +92,9 @@ export default function PostRecipeForm() {
         ingredients: trimmedIngredients,
         instructions: trimmedInstructions,
         category,
-        image: imageUrl || null
+        image: imageUrl || defaultImage
       };
+      console.log(payLoad,"payload")
       await handlePost(payLoad);
     } catch (err) {
       console.log("Error submitting recipe:", err);
@@ -247,7 +251,11 @@ export default function PostRecipeForm() {
         <section>
           {loading && <p className="text-sm text-gray-600 mt-1">...Loading</p>}
           {error && <p className="text-sm text-red-600 mt-1">Error: {error}</p>}
-          <input
+          {/* <input
+            type="file"
+            onChange={() => handleImageUpload( defaultImage)}
+          /> */}
+           <input
             type="file"
             onChange={handleImageUpload}
           />

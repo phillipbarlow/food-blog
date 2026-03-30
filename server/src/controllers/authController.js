@@ -3,17 +3,21 @@ import jwt from "jsonwebtoken";
 import { pool } from "../db/pool.js";
 
 export async function signup(req, res) {
-  const { display_name, username, password } = req.body;
+  const { displayName, username, password } = req.body;
   // console.log("controller", display_name, username, password )
   // console.log(req.body.payload)
-  if (!display_name) {
-    return res.status(400).json({ error: "display_name is missing" });
-  }
-  if (!username) {
-    return res.status(400).json({ error: "username is missing backend" });
-  }
-  if (!password) {
-    return res.status(400).json({ error: "password is missing" });
+  console.log(req.body)
+  console.log(displayName, username)
+ const missing = [];
+  if (!displayName) missing.push("displayName");
+  if (!username) missing.push("username");
+  if (!password) missing.push("password");
+
+  if (missing.length > 0) {
+    return res.status(400).json({
+      error: "Missing required fields",
+      missing,
+    });
   }
 
   try {
@@ -22,7 +26,7 @@ export async function signup(req, res) {
       `INSERT INTO users (display_name, username, password_hash)
        VALUES ($1, $2, $3)
        RETURNING id, display_name, username`,
-      [display_name || null, username, password_hash],
+      [displayName || null, username, password_hash],
     );
     if (result.rows.length === 0) {
       return res.status(400).json({ error: "Invalid email or password" });
@@ -50,12 +54,12 @@ export async function login(req, res) {
       username,
     ]);
 
-    // console.log(result.rows[0],"--from auth")
     if (result.rows.length === 0) {
       return res.status(401).json({ error: "Invalid credentials!" });
     }
-
+    
     const user = result.rows[0];
+    console.log(user,"--from login controller")
     const match = await bcrypt.compare(password, user.password_hash);
 
     if (!match) return res.status(401).json({ error: "Invalid credentials!" });
@@ -64,13 +68,13 @@ export async function login(req, res) {
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );
-console.log(token)
+
     res.status(200).json({
       message: "Login successful",
       user: {
         id: user.id,
-        displayName: user.display_name,
-        username,
+        // displayName: user.display_name,
+        username:user.username,
       },
       token,
     });

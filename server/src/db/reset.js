@@ -7,9 +7,10 @@ async function reset() {
   try {
     console.log("Resetting database...");
 
-    await pool.query("DROP TABLE IF EXISTS comments;");
-    await pool.query("DROP TABLE IF EXISTS recipes;");
-    await pool.query("DROP TABLE IF EXISTS users;");
+    await pool.query(`DROP TABLE IF EXISTS recipe_likes CASCADE`);
+await pool.query(`DROP TABLE IF EXISTS comments CASCADE`);
+await pool.query(`DROP TABLE IF EXISTS recipes CASCADE`);
+await pool.query(`DROP TABLE IF EXISTS users CASCADE`);
 
     await pool.query(`
       CREATE TABLE users (
@@ -39,7 +40,7 @@ async function reset() {
             id SERIAL PRIMARY KEY,
             recipe_id INTEGER REFERENCES recipes(id) ON DELETE CASCADE,
             user_id INTEGER REFERENCES users(id),
-            name TEXT NOT NULL,
+            username TEXT NOT NULL,
             time TEXT NOT NULL,
             comment TEXT NOT NULL,
             avatar TEXT,
@@ -110,7 +111,7 @@ async function reset() {
       const rating = ((i - 1) % 5) + 1;
 
       await pool.query(
-        `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
+        `INSERT INTO comments (recipe_id, user_id, username, time, comment, avatar, rating)
          VALUES ($1, $2, $3, $4, $5, $6, $7);`,
         [recipeId, userId, name, time, comment, avatar, rating],
       );

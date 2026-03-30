@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loginUserApi } from "../api/api";
 import { useAuth } from "../hooks/userAuth.js";
 import { useNavigate } from "react-router-dom";
@@ -7,14 +7,31 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loggedin, setLoggedin] = useState(null);
   const navigate = useNavigate();
   const { loginAuth } = useAuth();
-  console.log(useAuth())
+  useEffect(() => {
+    try {
+      setLoading(true);
+    } catch (error) {
+      console.log("Error loading login", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [loggedin]);
+  // console.log(loginAuth)
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const data = await loginUserApi({ username, password });
-      loginAuth(data);
+      // console.log("LOGIN RESPONSE:", data);
+      // console.log("LOGIN TOKEN:", data.token);
+      // console.log("LOGIN USER:", data.user);
+      const res = loginAuth(data);
+      console.log("res from auth response ", res);
+      setLoggedin(res);
+      // console.log(loginAuth(data),"-- line 30")
       navigate("/");
       setError(false);
     } catch (err) {
@@ -24,7 +41,6 @@ export default function Login() {
     }
   };
   return (
-    // Global container
     <main className="h-[calc(100vh-100px)] flex justify-center items-center">
       <div className="bg-gray-50 p-4 max-w-md w-full rounded-2xl shadow-lg">
         {error && <p>{error}</p>}

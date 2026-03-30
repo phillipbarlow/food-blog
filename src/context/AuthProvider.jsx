@@ -1,28 +1,30 @@
-import { useEffect, useState} from "react";
-import {AuthContext}  from "./AuthContext";
+import { useEffect, useState } from "react";
+import { AuthContext } from "./AuthContext";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const storedToken = localStorage.getItem("token");
+  const storedUser = localStorage.getItem("user");
 
-  useEffect(()=>{
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-
-    if(storedToken && storedUser){
+  // console.log("TOKEN AFTER SAVE:", localStorage.getItem("token"));
+  // console.log("USER AFTER SAVE:", localStorage.getItem("user"));
+  useEffect(() => {
+    if (storedToken && storedUser) {
       setToken(storedToken);
-      try{
-        setUser(JSON.parse(storedUser))
-      }catch{
-        localStorage.removeItem("user")
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        localStorage.removeItem("user");
       }
     }
-    setLoading(false)
-  },[])
+    setLoading(false);
+  }, [storedToken, storedUser]);
 
-  function loginAuth(userData) {
-    const { user, token } = userData;
+  function loginAuth({ user, token }) {
+    // console.log("LOGIN() TOKEN:", token);
+    // console.log("LOGIN() USER:", user);
     setUser(user);
     setToken(token);
     localStorage.setItem("user", JSON.stringify(user));
@@ -32,7 +34,7 @@ export function AuthProvider({ children }) {
 
   function logoutAuth() {
     setUser(null);
-    setToken(null)
+    setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
   }

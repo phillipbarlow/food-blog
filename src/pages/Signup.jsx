@@ -22,7 +22,7 @@ export default function Signup() {
     passwordClasses =
       "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100";
   }
-
+// console.log(displayName)
   const formSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -35,17 +35,19 @@ export default function Signup() {
     }
     setPasswordMatch(true);
     try {
-      const payload = { display_name: displayName, username, password };
+      const payload = { displayName, username, password };
       console.log("Sending payload:", payload);
-      await signupUserApi(payload);
+      const res = await signupUserApi(payload);
+      console.log(res)
       const loginData = await loginUserApi({ username, password });
       loginAuth(loginData);
       navigate("/");
     } catch (err) {
       console.log("Error from signup ", err);
-    } finally {
-      setDisplayName("");
-    }
+    } 
+    // finally {
+    //   setDisplayName("");
+    // }
   };
 
   return (

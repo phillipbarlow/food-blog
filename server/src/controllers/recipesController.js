@@ -144,7 +144,7 @@ export async function getRecipeCardInfo(req, res) {
   }
 }
 
-export async function getFeaturedRecipePreviews(req,res) {
+export async function getFeaturedRecipePreviews(req, res) {
   try {
     const result = await pool.query(
       `SELECT
@@ -163,19 +163,23 @@ export async function getFeaturedRecipePreviews(req,res) {
       ORDER BY id DESC;`,
     );
 
-    if(result.rows.length === 0){
-      return res.status(404).json({error:"Featured recipe preview card not found"})
+    if (result.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "Featured recipe preview card not found" });
     }
 
     res.status(200).json({
       message: "Recipe preview card recieved successfully",
       recipe: result.rows,
-    })
+    });
   } catch (error) {
     console.error("Error fetching recipe preview ", error);
     res
       .status(500)
-      .json({ error: `Database error from getFeaturedRecipePreviews ${error}` });
+      .json({
+        error: `Database error from getFeaturedRecipePreviews ${error}`,
+      });
   }
 }
 
@@ -245,7 +249,7 @@ export async function postRecipe(req, res) {
   if (!category) {
     return res.status(400).json({ error: "Category is missing" });
   }
-  // console.log(req.user.id)
+  console.log(req.user, "--name");
   try {
     const result = await pool.query(
       `INSERT INTO recipes (user_id, title,ingredients ,instructions ,category, image, created_by, image_id)
@@ -258,11 +262,11 @@ export async function postRecipe(req, res) {
         instructionsString,
         category,
         image || null,
-        req.user.displayname,
+        req.user.username,
         image_id || null,
       ],
     );
-
+    console.log("REQ.USER:", req.user);
     res.status(201).json({
       message: "Recipe posted successfully",
       recipe: result.rows[0],

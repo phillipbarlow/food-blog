@@ -3,14 +3,15 @@ import { getCommentsWithUsers } from "../db/comments.js";
 
 export async function postComment(req, res) {
   const recipeId = Number(req.params.recipeId);
-  const { comment, rating, name } = req.body;
+  const { comment, rating, username } = req.body;
   const userId = req.user.id;
   const time = new Date().toISOString().replace("T", " ").slice(0, 16);
   const DEFAULT_IMAGE = "http://localhost:5001/images/default.png";
   const image = req.body.avatar || DEFAULT_IMAGE;
   const missing = [];
   if (!recipeId) missing.push("recipeId");
-  if (!name) missing.push("name");
+  if (!userId) missing.push("userId");
+  if (!username) missing.push("username");
   if (!comment) missing.push("comment");
 
   if (missing.length > 0) {
@@ -23,10 +24,10 @@ export async function postComment(req, res) {
 
   try {
     const result = await pool.query(
-      `INSERT INTO comments (recipe_id, user_id, name, time, comment, avatar, rating)
+      `INSERT INTO comments (recipe_id, user_id, username, time, comment, avatar, rating)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *;`,
-      [recipeId, userId, name, time, comment, image, rating || null],
+      [recipeId, userId, username, time, comment, image, rating || null],
     );
     // console.log(result)
     if (result.rows.length === 0) {

@@ -35,7 +35,7 @@ export default function CommentSection({ recipeId, allComments }) {
     setIsPosting(true);
     const newComment = {
       userId: user.id,
-      name: user.displayName,
+      displayName: user.displayName,
       username: user.username,
       time: new Date().toISOString().replace("T", " ").slice(0, 16),
       comment,

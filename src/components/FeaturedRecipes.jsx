@@ -26,6 +26,7 @@ export default function FeaturedRecipes() {
       try {
         
         const data = await getRecipePreview();
+        console.log(data)
         setRecipes(data.recipe);
       } catch (err) {
         console.log("Error from FeaturedRecipes ", err);
